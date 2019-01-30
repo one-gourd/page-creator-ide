@@ -1,0 +1,16 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules
+test
+src
+stories
+storybook-static
+.storybook
+coverage
+demo
+tsconfig.json
+jest.config.js
+webpack.*.js
