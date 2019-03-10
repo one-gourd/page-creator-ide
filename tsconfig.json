@@ -10,6 +10,7 @@
         "target": "es5",
         "jsx": "react",
         "downlevelIteration": true,
+        "resolveJsonModule": true,
         "experimentalDecorators": true,
         "rootDirs": [
             "src",

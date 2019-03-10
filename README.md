@@ -40,7 +40,7 @@ git clone https://github.com/alibaba-paimai-frontend/page-creator-ide.git
 npm install
 
 ## 安装 peerDependencies 依赖包
-npm install ide-code-editor@0.x.x ss-tree@1.x.x antd@3.x mobx@4.x mobx-react@5.x mobx-state-tree@3.x react@16.x styled-components@4.x.x react-dom@16.x
+npm install ide-code-editor@0.x.x ss-tree@1.x.x ide-lib-utils@0.x ide-lib-base-component@0.x ette@0.x ette-proxy@0.x ette-router@0.x antd@3.x mobx@4.x mobx-react@5.x mobx-react-lite@1.x mobx-state-tree@3.x react@16.x styled-components@4.x.x react-dom@16.x
 ```
 
 运行以下命令后，访问 demo 地址： http://localhost:9000
@@ -52,15 +52,12 @@ npm run dev
 ```shell
 npm run storybook
 ```
-
-
 P.S. 由于需要依赖 [ide-code-editor](https://github.com/alibaba-paimai-frontend/ide-code-editor) 仓库比较特别，需要：
  1. 将[ide-code-editor](https://github.com/alibaba-paimai-frontend/ide-code-editor) 仓库下载到本地
  2. 本地运行 `npm run build` 打出其 `dist` 目录
  3. 开启本地服务器的 `9005` 端口，推荐使用 [http-server](https://www.npmjs.com/package/http-server)：
 
 ![http server](https://ws3.sinaimg.cn/large/006tNc79ly1fz6cheyqhvj30jj03kaai.jpg)
-
 
 ### 运行测试用例
 

@@ -1,4 +1,22 @@
 const COMMON_EXTERNALS = {
+  ette: {
+    commonjs: 'ette',
+    commonjs2: 'ette',
+    amd: 'ette',
+    root: 'Ette'
+  },
+  'ette-router': {
+    commonjs: 'ette-router',
+    commonjs2: 'ette-router',
+    amd: 'ette-router',
+    root: 'etteRouter'
+  },
+  'ette-proxy': {
+    commonjs: 'ette-proxy',
+    commonjs2: 'ette-proxy',
+    amd: 'ette-proxy',
+    root: 'etteProxy'
+  },
   react: {
     commonjs: 'react',
     commonjs2: 'react',
@@ -19,6 +37,12 @@ const COMMON_EXTERNALS = {
     amd: 'mobx-react',
     root: 'mobxReact'
   },
+  'mobx-react-lite': {
+    commonjs: 'mobx-react-lite',
+    commonjs2: 'mobx-react-lite',
+    amd: 'mobx-react-lite',
+    root: 'mobxReact'
+  },
   'mobx-state-tree': {
     commonjs: 'mobx-state-tree',
     commonjs2: 'mobx-state-tree',
@@ -30,6 +54,18 @@ const COMMON_EXTERNALS = {
     commonjs2: 'styled-components',
     amd: 'styled-components',
     root: 'styled'
+  },
+  "ide-lib-utils": {
+    "commonjs": "ide-lib-utils",
+    "commonjs2": "ide-lib-utils",
+    "amd": "ide-lib-utils",
+    "root": "ideLibUtils"
+  },
+  "ide-lib-base-component": {
+    "commonjs": "ide-lib-base-component",
+    "commonjs2": "ide-lib-base-component",
+    "amd": "ide-lib-base-component",
+    "root": "ideBaseComponent"
   }
 };
 

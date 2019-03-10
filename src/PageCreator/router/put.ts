@@ -1,54 +1,27 @@
 import Router from 'ette-router';
+import { updateStylesMiddleware, updateThemeMiddleware, buildNormalResponse } from 'ide-lib-base-component';
 
 import { IContext } from './helper';
-import { isPlainObject } from '../../lib/util';
+import { TPageCreatorControlledKeys } from '../schema/index';
 
 
 export const router = new Router();
 // 更新单项属性
-router.put('model', '/model', function(ctx: IContext) {
+router.put('updateModel', '/model', function(ctx: IContext) {
   const { stores, request } = ctx;
   const { name, value } = request.data;
 
   //   stores.setSchema(createSchemaModel(schema));
+  const originValue = stores.model[name as TPageCreatorControlledKeys];
   const isSuccess = stores.model.updateAttribute(name, value);
-  ctx.response.body = {
-    success: isSuccess
-  };
 
-  ctx.response.status = 200;
+  buildNormalResponse(ctx, 200, { success: isSuccess, origin: originValue }, `属性 ${name} 的值从 ${originValue} -> ${value} 的变更: ${isSuccess}`);
 });
 
 
 // 更新 css 属性
-router.put('model', '/model/styles/:target', function (ctx: IContext) {
-  const { stores, request } = ctx;
-  const { style } = request.data;
-  const { target } = ctx.params;
-  let result = {
-    message: '',
-    success: false
-  };
-
-  if (!target) {
-    result.message = '传入 css 目标不能为空';
-  } else if (!isPlainObject(style)) {
-    result.message = `传入 css 对象格式不正确: ${style}`;
-  } else {
-    // stores.setSchema(createSchemaModel(schema));
-    result = stores.model.updateCssAttribute(target, style);
-  }
-
-  ctx.response.body = result;
-  ctx.response.status = 200;
-});
+router.put('updateStyles', '/model/styles/:target', updateStylesMiddleware('model'));
 
 
 // 更新 theme 属性
-router.put('model', '/model/theme/:target', function (ctx: IContext) {
-  const { stores, request } = ctx;
-  const { value } = request.data;
-  const { target } = ctx.params;
-  ctx.response.body = stores.model.updateTheme(target, value);
-  ctx.response.status = 200;
-});
+router.put('updateTheme', '/model/theme/:target', updateThemeMiddleware('model'));
