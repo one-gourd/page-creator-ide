@@ -1,19 +1,32 @@
-import React, { Component, useCallback } from 'react';
+import React, { Component, useCallback, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button } from 'antd';
 import { pick } from 'ide-lib-utils';
-import { based, Omit, OptionalProps, IBaseTheme, IBaseComponentProps, IStoresEnv, useIndectedEvents, extracSubEnv, IBaseStyles } from 'ide-lib-base-component';
+import useComponentSize from '@rehooks/component-size';
+import {
+  based,
+  Omit,
+  OptionalProps,
+  IBaseTheme,
+  IBaseComponentProps,
+  IStoresEnv,
+  useInjectedEvents,
+  extracSubEnv,
+  IBaseStyles
+} from 'ide-lib-base-component';
 import SplitPane from 'react-split-pane';
 
-
 import {
-  HeaderBar, IHeaderBarProps,
-  THeaderBarControlledKeys, 
-  HeaderBarAddStore} from 'ide-header-bar';
+  HeaderBar,
+  IHeaderBarProps,
+  THeaderBarControlledKeys,
+  HeaderBarAddStore
+} from 'ide-header-bar';
 
 import {
   ComponentTree,
   IComponentTreeProps,
+  ComponentTreeAddStore,
   TComponentTreeControlledKeys
 } from 'ide-component-tree';
 
@@ -25,7 +38,11 @@ import {
 } from 'ide-switch-panel';
 
 import { debugInteract, debugRender } from '../lib/debug';
-import { StyledContainer } from './styles';
+import {
+  StyledContainer,
+  StyledComponentTreeWrap,
+  StyledSwitchPanelWrap
+} from './styles';
 import { AppFactory } from './controller/index';
 import { StoresFactory, IStoresModel } from './schema/stores';
 import { TPageCreatorControlledKeys, CONTROLLED_KEYS } from './schema/index';
@@ -46,7 +63,6 @@ type OptionalSwitchPanelProps = OptionalProps<
   TSwitchPanelControlledKeys
 >;
 
-
 interface ISubComponents {
   HeaderBarComponent: React.ComponentType<OptionalHeaderBarProps>;
   ComponentTreeComponent: React.ComponentType<OptionalComponentTreeProps>;
@@ -64,28 +80,28 @@ export interface IPageCreatorEvent {
 //   container?: React.CSSProperties;
 // }
 
-export interface IPageCreatorTheme extends IBaseTheme{
+export interface IPageCreatorTheme extends IBaseTheme {
   main: string;
   bgColor: string;
 }
 
-export interface IPageCreatorProps extends IPageCreatorEvent, IBaseComponentProps{
+export interface IPageCreatorProps
+  extends IPageCreatorEvent,
+    IBaseComponentProps {
   /**
-  * 子组件 componentTree
-  */
+   * 子组件 componentTree
+   */
   componentTree?: OptionalComponentTreeProps;
 
   /**
-  * 子组件 headerBar
-  */
+   * 子组件 headerBar
+   */
   headerBar?: OptionalHeaderBarProps;
 
   /**
-  * 子组件 componentTree
-  */
+   * 子组件 componentTree
+   */
   switchPanel?: OptionalSwitchPanelProps;
-
-
 
   /**
    * 是否展现
@@ -96,9 +112,7 @@ export interface IPageCreatorProps extends IPageCreatorEvent, IBaseComponentProp
    * 文案
    */
   text?: string;
-
-};
-
+}
 
 export const DEFAULT_PROPS: IPageCreatorProps = {
   theme: {
@@ -115,10 +129,23 @@ export const DEFAULT_PROPS: IPageCreatorProps = {
  * @param subComponents - 子组件列表
  */
 export const PageCreatorHOC = (subComponents: ISubComponents) => {
-  const PageCreatorHOC = (props: IPageCreatorProps = DEFAULT_PROPS) => {
-    const { ComponentTreeComponent, SwitchPanelComponent, HeaderBarComponent } = subComponents;
+  const PageCreatorHOC = (props: IPageCreatorProps) => {
+    const {
+      ComponentTreeComponent,
+      SwitchPanelComponent,
+      HeaderBarComponent
+    } = subComponents;
+    let switchPanelWrapRef = useRef(null);
+    let switchPanelWrapSize = useComponentSize(switchPanelWrapRef); // 获取元素尺寸
+
     const mergedProps = Object.assign({}, DEFAULT_PROPS, props);
-    const { componentTree, visible, text, styles } = mergedProps;
+    const { componentTree, switchPanel, visible, text, styles } = mergedProps;
+
+    // console.log(777, switchPanelWrapSize);
+    // 强制更新宽、高属性
+    switchPanel.width = switchPanelWrapSize.width;
+    switchPanel.height = switchPanelWrapSize.height;
+
 
     const onClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
       const { onClick } = props;
@@ -144,17 +171,19 @@ export const PageCreatorHOC = (subComponents: ISubComponents) => {
             maxSize={300}
             defaultSize={200}
           >
-            <div><ComponentTreeComponent /></div>
-            <div>
-              <SwitchPanelComponent/>
-            </div>
+            <StyledComponentTreeWrap>
+              <ComponentTreeComponent {...componentTree} />
+            </StyledComponentTreeWrap>
+            <StyledSwitchPanelWrap ref={switchPanelWrapRef}>
+              <SwitchPanelComponent {...switchPanel} />
+            </StyledSwitchPanelWrap>
           </SplitPane>
         </SplitPane>
       </StyledContainer>
     );
   };
   PageCreatorHOC.displayName = 'PageCreatorHOC';
-  return observer(based(PageCreatorHOC));
+  return observer(based(PageCreatorHOC, DEFAULT_PROPS));
 };
 
 // 采用高阶组件方式生成普通的 PageCreator 组件
@@ -173,35 +202,45 @@ export const PageCreator = PageCreatorHOC({
  * @param stores - store 模型实例
  */
 export const PageCreatorAddStore = (storesEnv: IStoresEnv<IStoresModel>) => {
-  const {stores} = storesEnv;
+  const { stores } = storesEnv;
   const PageCreatorHasSubStore = PageCreatorHOC({
     // @ts-ignore
-    ComponentTreeComponent: ComponentTreeAddStore(stores.componentTree, extracSubEnv(storesEnv, 'componentTree')),
+    ComponentTreeComponent: ComponentTreeAddStore(
+      extracSubEnv(storesEnv, 'componentTree')
+    ),
     // @ts-ignore
-    HeaderBarComponent: HeaderBarAddStore(stores.headerBar, extracSubEnv(storesEnv, 'headerBar')),
+    HeaderBarComponent: HeaderBarAddStore(extracSubEnv(storesEnv, 'headerBar')),
     // @ts-ignore
-    SwitchPanelComponent: SwitchPanelAddStore(stores.switchPanel, extracSubEnv(storesEnv, 'switchPanel'))
+    SwitchPanelComponent: SwitchPanelAddStore(
+      extracSubEnv(storesEnv, 'switchPanel')
+    )
   });
 
-  const PageCreatorWithStore = (props: Omit<IPageCreatorProps, TPageCreatorControlledKeys>) => {
-    const {
-      componentTree={}, 
-     ...otherProps} = props;
+  const PageCreatorWithStore = (
+    props: Omit<IPageCreatorProps, TPageCreatorControlledKeys>
+  ) => {
+    const { componentTree = {}, ...otherProps } = props;
     const { model } = stores;
     const controlledProps = pick(model, CONTROLLED_KEYS);
     debugRender(`[${stores.id}] rendering`);
 
-    const componentTreeWithInjected = useIndectedEvents<IComponentTreeProps, IStoresModel>(storesEnv, componentTree, {
-      'onRightClickNode': []
+    const componentTreeWithInjected = useInjectedEvents<
+      IComponentTreeProps,
+      IStoresModel
+    >(storesEnv, componentTree, {
+      onSelectListItem: []
     });
 
-  const otherPropsWithInjected = useIndectedEvents <IPageCreatorProps, IStoresModel>(storesEnv, otherProps, {
-    'onClick': [showConsole]
-  });
+    const otherPropsWithInjected = useInjectedEvents<
+      IPageCreatorProps,
+      IStoresModel
+    >(storesEnv, otherProps, {
+      onClick: [showConsole]
+    });
 
     return (
       <PageCreatorHasSubStore
-        componentTree={ componentTreeWithInjected }
+        componentTree={componentTreeWithInjected}
         {...controlledProps}
         {...otherPropsWithInjected}
       />
@@ -210,7 +249,7 @@ export const PageCreatorAddStore = (storesEnv: IStoresEnv<IStoresModel>) => {
 
   PageCreatorWithStore.displayName = 'PageCreatorWithStore';
   return observer(PageCreatorWithStore);
-}
+};
 
 /**
  * 生成 env 对象，方便在不同的状态组件中传递上下文
@@ -224,7 +263,7 @@ export const PageCreatorStoresEnv = () => {
     client: app.client,
     innerApps: innerApps
   };
-}
+};
 
 /**
  * 工厂函数，每调用一次就获取一副 MVC
@@ -235,5 +274,5 @@ export const PageCreatorFactory = () => {
   return {
     ...storesEnv,
     PageCreatorWithStore: PageCreatorAddStore(storesEnv)
-  }
+  };
 };

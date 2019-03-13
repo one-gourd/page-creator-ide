@@ -64,3 +64,21 @@ export const StyledContainer = styled.div.attrs({
     border-color: transparent;
   }
 `;
+
+
+
+export const StyledComponentTreeWrap = styled.div.attrs({
+  style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
+})`
+  background-color: white;
+  width: 100%;
+  height: 100%;
+`;
+
+export const StyledSwitchPanelWrap = styled.div.attrs({
+  style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
+})`
+  background-color: white;
+  width: 100%;
+  height: 100%;
+`;

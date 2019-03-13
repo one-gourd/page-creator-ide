@@ -29,10 +29,19 @@ export const AppFactory = function (stores: IStoresModel, innerApps: Record<stri
 
     // 进行路由代理，要放在路由挂载之前
     applyProxy(app, [
-        // {
-        //     name: ESubApps.schemaTree,
-        //     targets: ['tree', 'nodes']
-        // }
+        {
+            name: ESubApps.componentTree,
+            targets: ['model', 'menu', 'clients']
+        },
+        {
+            name: ESubApps.headerBar,
+            targets: ['headerbar']
+        },
+        {
+            name: ESubApps.switchPanel,
+            targets: ['panels', 'clients']
+        },
+
     ]);
 
     // 注册路由
