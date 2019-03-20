@@ -146,12 +146,6 @@ export const PageCreatorHOC = (subComponents: ISubComponents) => {
     switchPanel.width = switchPanelWrapSize.width;
     switchPanel.height = switchPanelWrapSize.height;
 
-
-    const onClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-      const { onClick } = props;
-      onClick && onClick(e);
-    }, []);
-
     return (
       <StyledContainer
         style={styles.container}

@@ -1,19 +1,29 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { createSchemaModel, ISchemaProps } from 'ide-tree';
-import { jsonConverter } from 'ide-component-tree';
+import { schemaConverter, ESchemaOrigin } from 'ide-component-tree';
 import { IPanel } from 'ide-switch-panel';
+import { map } from 'ss-tree';
+import { debounce } from 'ts-debounce';
+import { invariant } from 'ide-lib-utils';
 
 import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
 
-import schemajson from './schema.json';
+import oldSchemajson from './old-schema.json';
+import { schema as newSchemajson } from './new-schema.js';
+import { debugError } from '../src/lib/debug';
 
-const convertedJSON = jsonConverter(schemajson) as ISchemaProps;
+const convertedJSON = schemaConverter(
+  oldSchemajson,
+  ESchemaOrigin.GOURD_V1) as ISchemaProps;
 
-const schema = createSchemaModel(convertedJSON);
+const schemaJSONv2 = schemaConverter(newSchemajson.components);
+
+const schema = createSchemaModel(schemaJSONv2);
+// const schema = createSchemaModel(convertedJSON);
 
 const onExpand = function(keys) {
-  console.log(888, keys);
+  // console.log(888, keys);
 };
 
 const onSelectNode = node => {
@@ -70,24 +80,58 @@ function onRightClick({ node, event }) {
 
 function onSwitchWithClient(panel: IPanel, index: number) {
   console.log('[with client]当前点击：', panel, index);
-  client.put('/clients/switchPanel/clients/codeEditor/editor', {
-    name: 'value',
-    value: `${index}: panel name: ${panel.id}`
-  });
+  // client.put('/clients/switchPanel/clients/codeEditor/editor', {
+  //   name: 'value',
+  //   value: `${index}: panel name: ${panel.id}`
+  // });
 }
+// 经过 debounce 处理的函数，提高性能
+const schemaModelChange = debounce(
+  (key: string, value: any) => {
+    if (key === 'schema') {
+      const result = value.schemaJSON ? value.schemaJSON : value;
+      console.log(777, 'schema changed:', key);
+
+      // 更改 ide 的内容
+      client.put('/clients/switchPanel/clients/codeEditor/editor', {
+        name: 'value',
+        value: JSON.stringify(result.children, null, 4)
+      });
+
+      // 然后传递数据给 iframe
+      newSchemajson.components = result.children;
+      client.put('/clients/switchPanel/clients/previewer/iframe', {
+        name: 'data',
+        value: {
+          event: 'data-from-ide',
+          type: 'updateSchema',
+          data: newSchemajson
+        }
+      });
+    }
+  },
+  400,
+  {
+    isImmediate: true
+  }
+);
 
 const componentTree = {
   schemaTree: {
     onSelectNode: onSelectNode,
     onRightClickNode: onRightClick,
+    onModelChange: schemaModelChange,
     onExpand
   }
 };
 
 const switchPanel = {
   onSwitch: onSwitchWithClient,
+  codeEditor: {
+    language: 'json'
+  },
   previewer: {
-    url: 'https://daxue.taobao.com/markets/daxue/help#account'
+    url: 'http://localhost:9006/gourd2/pi/demo/index.html?from=ide'
   }
 };
 
@@ -105,3 +149,16 @@ client.post('/clients/componentTree/clients/schemaTree/tree', {
   schema: schema
 }); // 注意这里的 schema 需要用 createSchemaModel 转换一层，否则因为缺少 parentId ，导致无法创建成功
 client.post('/clients/componentTree/clients/contextMenu/menu', { menu: menu });
+
+// // 模拟新 pi 的更改
+// setTimeout(() => {
+//   // 然后传递数据
+//   client.put('/clients/switchPanel/clients/previewer/iframe', {
+//     name: 'data',
+//     value: {
+//       event: 'data-from-ide',
+//       type: 'updateSchema',
+//       data: newSchemajson
+//     }
+//   });
+// }, 2000);

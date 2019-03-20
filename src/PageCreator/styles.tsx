@@ -71,6 +71,7 @@ export const StyledComponentTreeWrap = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
 })`
   background-color: white;
+  overflow: scroll;
   width: 100%;
   height: 100%;
 `;
