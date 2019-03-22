@@ -7,6 +7,7 @@
   "browser": "dist/index.umd.js",
   "typings": "dist/index.d.ts",
   "sideEffects": false,
+  "homepage": "http://alibaba-paimai-frontend.github.io/page-creator-ide",
   "repository": {
     "type": "git",
     "url": "https://github.com/alibaba-paimai-frontend/page-creator-ide.git"
@@ -17,6 +18,8 @@
     "release": "npx standard-version",
     "dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
+    "pregh-pages": "node ./node-helper/download-code-worker.js",
+    "gh-pages": "webpack --config webpack.gh-pages.js && npx gh-pages -d public",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "keywords": [],
@@ -46,12 +49,13 @@
     "chance": "^1.0.16",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^4.6.0",
-    "http-proxy-middleware": "^0.19.1",
     "css-loader": "^1.0.1",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
     "enzyme-to-json": "^3.3.4",
+    "gh-pages": "^2.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "http-proxy-middleware": "^0.19.1",
     "jest": "^23.6.0",
     "react-docgen-typescript-loader": "^3.0.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",

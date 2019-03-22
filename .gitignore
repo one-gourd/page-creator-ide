@@ -46,3 +46,7 @@ jspm_packages
 dist
 
 storybook-static
+
+# output demo
+.cache
+public
