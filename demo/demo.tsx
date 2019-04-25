@@ -7,6 +7,13 @@ import { map } from 'ss-tree';
 import { debounce } from 'ts-debounce';
 import { invariant } from 'ide-lib-utils';
 
+import { FunctionSets, FunctionSetsFactory, IFunctionSetsProps } from 'ide-function-sets';
+const {
+  ComponentWithStore: FunctionSetsWithStore,
+  client: clientFnSets
+} = FunctionSetsFactory();
+
+
 import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
 
 import oldSchemajson from './old-schema.json';
@@ -135,14 +142,41 @@ const switchPanel = {
   }
 };
 
+
+
+// render(
+//   <PageCreatorWithStore
+//     componentTree={componentTree}
+//     switchPanel={switchPanel}
+//     onClick={onClick}
+//   />,
+//   document.getElementById('example') as HTMLElement
+// );
+
+// 当函数有更改的时候
+function onFnListChange(type, fnItem, fnLists, actionContext) {
+  console.log(`list change, type: ${type}, fnItem: %o`, fnItem);
+
+  const { context } = actionContext;
+
+  // 没有报错，才会自动关闭弹层
+  return !context.hasError;
+}
+
 render(
-  <PageCreatorWithStore
-    componentTree={componentTree}
-    switchPanel={switchPanel}
-    onClick={onClick}
+  <FunctionSetsWithStore
+    onFnListChange={onFnListChange}
   />,
   document.getElementById('example') as HTMLElement
 );
+
+// 让面板可见, 目前支持 add / edit / type 功能
+clientFnSets.put('/fn-panel', {
+  type: 'add',
+  name: 'renderRow2'
+}).then(res => {
+  console.log('res: ', res.body.message);
+});
 
 // 创建组件树和右键菜单
 client.post('/clients/componentTree/clients/schemaTree/tree', {

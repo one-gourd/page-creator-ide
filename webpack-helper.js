@@ -66,6 +66,12 @@ const COMMON_EXTERNALS = {
     "commonjs2": "ide-lib-base-component",
     "amd": "ide-lib-base-component",
     "root": "ideBaseComponent"
+  },
+  "ide-lib-engine": {
+    "commonjs": "ide-lib-engine",
+    "commonjs2": "ide-lib-engine",
+    "amd": "ide-lib-engine",
+    "root": "ideLibEngine"
   }
 };
 
