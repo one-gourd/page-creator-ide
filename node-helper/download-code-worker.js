@@ -67,7 +67,7 @@ fs.access(TARGET_DIR, fs.constants.F_OK, dirErr => {
   );
   //   如果不存在，则创建文件夹
   if (dirErr) {
-    fs.mkdirSync(TARGET_DIR, true);
+    fs.mkdirSync(TARGET_DIR, { recursive: true });
   }
   //   获取指定远程文
   filenames.forEach(name => {

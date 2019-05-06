@@ -14,7 +14,7 @@ router.get('getModelInstance', '/model', function (ctx: IContext) {
   const { stores, request } = ctx;
   const { query } = request;
   const filterArray = query && query.filter && query.filter.trim().split(',');
-
+  // const schemaTreeClient = getClientFromCtx(ctx, ESubApps.schemaTree); // 获取子 client
   buildNormalResponse(ctx, 200, { attributes: stores.model.allAttibuteWithFilter(filterArray) });
 });
 

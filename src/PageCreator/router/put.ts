@@ -2,8 +2,6 @@ import Router from 'ette-router';
 import { updateStylesMiddleware, updateThemeMiddleware, buildNormalResponse } from 'ide-lib-base-component';
 
 import { IContext } from './helper';
-import { TPageCreatorControlledKeys } from '../schema/index';
-
 
 export const router = new Router();
 // 更新单项属性
@@ -12,7 +10,7 @@ router.put('updateModel', '/model', function(ctx: IContext) {
   const { name, value } = request.data;
 
   //   stores.setSchema(createSchemaModel(schema));
-  const originValue = stores.model[name as TPageCreatorControlledKeys];
+  const originValue = stores.model[name];
   const isSuccess = stores.model.updateAttribute(name, value);
 
   buildNormalResponse(ctx, 200, { success: isSuccess, origin: originValue }, `属性 ${name} 的值从 ${originValue} -> ${value} 的变更: ${isSuccess}`);

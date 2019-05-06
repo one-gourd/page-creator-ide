@@ -13,12 +13,10 @@ const { getExternal } = require('./webpack-helper');
 const targetDir = 'public';
 
 module.exports = common.map(config => {
-  /* 这份配置是用于引入到浏览器中时候用的
-     比如 https://unpkg.com/page-creator-ide@0.1.0/dist/index.umd.js
-  */
+  /* 这份配置是用于发布 demo 到 gh-pages 分支使用的  */
   return merge(config, {
     entry: './demo/demo.tsx',
-    externals: getExternal(['ide-code-editor', 'ss-tree'], true),
+    externals: getExternal(["ide-code-editor","ss-tree"], true),
     mode: 'production',
     devtool: 'source-map',
     optimization: {
@@ -35,7 +33,7 @@ module.exports = common.map(config => {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production')
       }),
-      new CopyPlugin([{ from: './.cache/works', to: './' }, { from: './.cache/pi', to: 'pi' }])
+      new CopyPlugin([{ from: './.cache/works', to: './' }])
     ],
     output: {
       filename: 'demo.js',

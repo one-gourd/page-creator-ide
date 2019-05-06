@@ -7,11 +7,11 @@ import { map } from 'ss-tree';
 import { debounce } from 'ts-debounce';
 import { invariant } from 'ide-lib-utils';
 
-import { FunctionSets, FunctionSetsFactory, IFunctionSetsProps } from 'ide-function-sets';
-const {
-  ComponentWithStore: FunctionSetsWithStore,
-  client: clientFnSets
-} = FunctionSetsFactory();
+// import { FunctionSets, FunctionSetsFactory, IFunctionSetsProps } from 'ide-function-sets';
+// const {
+//   ComponentWithStore: FunctionSetsWithStore,
+//   client: clientFnSets
+// } = FunctionSetsFactory();
 
 
 import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
@@ -75,7 +75,7 @@ function onClickItem(key: string, keyPath: Array<string>, item: any) {
   console.log(`[11]当前点击项的 id: ${key}`);
 }
 
-const { PageCreatorWithStore, client } = PageCreatorFactory();
+const { ComponentWithStore: PageCreatorWithStore, client } = PageCreatorFactory();
 
 function onClick(value) {
   console.log('当前点击：', value);
@@ -144,39 +144,39 @@ const switchPanel = {
 
 
 
-// render(
-//   <PageCreatorWithStore
-//     componentTree={componentTree}
-//     switchPanel={switchPanel}
-//     onClick={onClick}
-//   />,
-//   document.getElementById('example') as HTMLElement
-// );
-
-// 当函数有更改的时候
-function onFnListChange(type, fnItem, fnLists, actionContext) {
-  console.log(`list change, type: ${type}, fnItem: %o`, fnItem);
-
-  const { context } = actionContext;
-
-  // 没有报错，才会自动关闭弹层
-  return !context.hasError;
-}
-
 render(
-  <FunctionSetsWithStore
-    onFnListChange={onFnListChange}
+  <PageCreatorWithStore
+    componentTree={componentTree}
+    switchPanel={switchPanel}
+    onClick={onClick}
   />,
   document.getElementById('example') as HTMLElement
 );
 
+// // 当函数有更改的时候
+// function onFnListChange(type, fnItem, fnLists, actionContext) {
+//   console.log(`list change, type: ${type}, fnItem: %o`, fnItem);
+
+//   const { context } = actionContext;
+
+//   // 没有报错，才会自动关闭弹层
+//   return !context.hasError;
+// }
+
+// render(
+//   <FunctionSetsWithStore
+//     onFnListChange={onFnListChange}
+//   />,
+//   document.getElementById('example') as HTMLElement
+// );
+
 // 让面板可见, 目前支持 add / edit / type 功能
-clientFnSets.put('/fn-panel', {
-  type: 'add',
-  name: 'renderRow2'
-}).then(res => {
-  console.log('res: ', res.body.message);
-});
+// clientFnSets.put('/fn-panel', {
+//   type: 'add',
+//   name: 'renderRow2'
+// }).then(res => {
+//   console.log('res: ', res.body.message);
+// });
 
 // 创建组件树和右键菜单
 client.post('/clients/componentTree/clients/schemaTree/tree', {
@@ -184,15 +184,15 @@ client.post('/clients/componentTree/clients/schemaTree/tree', {
 }); // 注意这里的 schema 需要用 createSchemaModel 转换一层，否则因为缺少 parentId ，导致无法创建成功
 client.post('/clients/componentTree/clients/contextMenu/menu', { menu: menu });
 
-// // 模拟新 pi 的更改
-// setTimeout(() => {
-//   // 然后传递数据
-//   client.put('/clients/switchPanel/clients/previewer/iframe', {
-//     name: 'data',
-//     value: {
-//       event: 'data-from-ide',
-//       type: 'updateSchema',
-//       data: newSchemajson
-//     }
-//   });
-// }, 2000);
+// 模拟新 pi 的更改
+setTimeout(() => {
+  // 然后传递数据
+  client.put('/clients/switchPanel/clients/previewer/iframe', {
+    name: 'data',
+    value: {
+      event: 'data-from-ide',
+      type: 'updateSchema',
+      data: newSchemajson
+    }
+  });
+}, 2000);

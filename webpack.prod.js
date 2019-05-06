@@ -10,7 +10,7 @@ const targetDir = 'dist';
 
 module.exports = common.map(config => {
   /* 这份配置是用于引入到浏览器中时候用的
-     比如 https://unpkg.com/page-creator-ide@0.1.0/dist/index.umd.js
+     比如 https://unpkg.com/page-creator-ide@0.1.1/dist/index.umd.js
   */
   return merge(config, {
     entry: './src/index.tsx',

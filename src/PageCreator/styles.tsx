@@ -10,7 +10,7 @@ interface IStyledProps extends IPageCreatorProps {
 
 export const StyledContainer = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
-})`
+})<IStyledProps>`
   background: ${(props: IStyledProps) => props.theme.bgColor};
   height: 100vh;
 
@@ -69,7 +69,7 @@ export const StyledContainer = styled.div.attrs({
 
 export const StyledComponentTreeWrap = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
-})`
+})<IStyledProps>`
   background-color: white;
   overflow: scroll;
   width: 100%;
@@ -78,7 +78,7 @@ export const StyledComponentTreeWrap = styled.div.attrs({
 
 export const StyledSwitchPanelWrap = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
-})`
+}) <IStyledProps>`
   background-color: white;
   width: 100%;
   height: 100%;

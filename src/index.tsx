@@ -1,16 +1,28 @@
-// import * as React from 'react';
-// import { render } from 'react-dom';
-// import Hello from './components/Hello';
+import { Instance } from 'mobx-state-tree';
+import { initSuitsFromConfig } from 'ide-lib-engine';
 
-// render(
-//   <Hello name="TypeScript" enthusiasmLevel={10} />,
-//   document.getElementById('example') as HTMLElement
-// );
-
-
+export * from './PageCreator/config';
 export * from './PageCreator/';
-export * from './PageCreator/schema/';
-export * from './PageCreator/schema/util';
-export * from './PageCreator/schema/stores';
 
-export * from './PageCreator/controller/';
+import { PageCreatorCurrying } from './PageCreator/';
+import { configPageCreator } from './PageCreator/config';
+
+const {
+    ComponentModel: PageCreatorModel,
+    StoresModel: PageCreatorStoresModel,
+    NormalComponent: PageCreator,
+    ComponentHOC: PageCreatorHOC,
+    ComponentAddStore: PageCreatorAddStore,
+    ComponentFactory: PageCreatorFactory
+} = initSuitsFromConfig(PageCreatorCurrying,configPageCreator);
+
+export {
+    PageCreatorModel,
+    PageCreatorStoresModel,
+    PageCreator,
+    PageCreatorHOC,
+    PageCreatorAddStore,
+    PageCreatorFactory
+};
+
+export interface IPageCreatorModel extends Instance<typeof PageCreatorModel> { }
