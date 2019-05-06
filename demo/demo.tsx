@@ -18,7 +18,6 @@ import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
 
 import oldSchemajson from './old-schema.json';
 import { schema as newSchemajson } from './new-schema.js';
-import { debugError } from '../src/lib/debug';
 
 const convertedJSON = schemaConverter(
   oldSchemajson,
@@ -87,7 +86,7 @@ function onRightClick({ node, event }) {
 
 function onSwitchWithClient(panel: IPanel, index: number) {
   console.log('[with client]当前点击：', panel, index);
-  // client.put('/clients/switchPanel/clients/codeEditor/editor', {
+  // client.put('/editorInPanel/editor', {
   //   name: 'value',
   //   value: `${index}: panel name: ${panel.id}`
   // });
@@ -100,14 +99,14 @@ const schemaModelChange = debounce(
       console.log(777, 'schema changed:', key);
 
       // 更改 ide 的内容
-      client.put('/clients/switchPanel/clients/codeEditor/editor', {
+      client.put('/editorInPanel/editor', {
         name: 'value',
         value: JSON.stringify(result.children, null, 4)
       });
 
       // 然后传递数据给 iframe
       newSchemajson.components = result.children;
-      client.put('/clients/switchPanel/clients/previewer/iframe', {
+      client.put('/previewer/iframe', {
         name: 'data',
         value: {
           event: 'data-from-ide',
@@ -179,15 +178,15 @@ render(
 // });
 
 // 创建组件树和右键菜单
-client.post('/clients/componentTree/clients/schemaTree/tree', {
+client.post('/schemaTree/tree', {
   schema: schema
 }); // 注意这里的 schema 需要用 createSchemaModel 转换一层，否则因为缺少 parentId ，导致无法创建成功
-client.post('/clients/componentTree/clients/contextMenu/menu', { menu: menu });
+client.post('/treeContextMenu/menu', { menu: menu });
 
 // 模拟新 pi 的更改
 setTimeout(() => {
   // 然后传递数据
-  client.put('/clients/switchPanel/clients/previewer/iframe', {
+  client.put('/previewer/iframe', {
     name: 'data',
     value: {
       event: 'data-from-ide',

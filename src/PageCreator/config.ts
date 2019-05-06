@@ -24,10 +24,23 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
   router: {
     domain: 'page-creator',
     list: [GetRouter, PostRouter, PutRouter, DelRouter],
-    // hoistRoutes: {
-    //   alias: 'bar',
-    //   routerNames: 'headerBar'
-    // }, // 提升访问子路由功能，相当于是强约束化的 alias
+    hoistRoutes: [{
+      alias: 'schemaTree',
+      routerNames: ['componentTree', 'schemaTree']
+    }
+    ,{
+      alias: 'treeContextMenu',
+        routerNames: ['componentTree', 'contextMenu']
+    }
+    ,{
+      alias: 'previewer',
+      routerNames: ['switchPanel', 'previewer']
+    }
+    ,{
+      alias: 'editorInPanel',
+      routerNames: ['switchPanel', 'codeEditor']
+    }
+  ], // 提升访问子路由功能，相当于是强约束化的 alias
     // aliases: {
     //   alias: 'blockbar',
     //   path: 'bar/headerbar'
