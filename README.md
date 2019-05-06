@@ -52,8 +52,8 @@ npm run dev
 ```shell
 npm run storybook
 ```
-P.S. 由于需要依赖 [ide-code-editor](https://github.com/alibaba-paimai-frontend/ide-code-editor) 仓库比较特别，需要：
- 1. 将[ide-code-editor](https://github.com/alibaba-paimai-frontend/ide-code-editor) 仓库下载到本地
+P.S. 由于需要依赖 [ide-code-editor](https://github.com/one-gourd/ide-code-editor) 仓库比较特别，需要：
+ 1. 将[ide-code-editor](https://github.com/one-gourd/ide-code-editor) 仓库下载到本地
  2. 本地运行 `npm run build` 打出其 `dist` 目录
  3. 开启本地服务器的 `9005` 端口，推荐使用 [http-server](https://www.npmjs.com/package/http-server)：
 
