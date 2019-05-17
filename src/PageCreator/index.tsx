@@ -1,6 +1,10 @@
 import React, { useCallback, useRef } from 'react';
 import { Button } from 'antd';
-import { IBaseTheme, IBaseComponentProps, useComponentSize } from 'ide-lib-base-component';
+import {
+  IBaseTheme,
+  IBaseComponentProps,
+  useComponentSize
+} from 'ide-lib-base-component';
 import { TComponentCurrying } from 'ide-lib-engine';
 import SplitPane from 'react-split-pane';
 
@@ -12,6 +16,8 @@ import {
 } from './styles';
 
 import { ISubProps } from './subs';
+
+import { AttributeEditor, IAttributeEditorProps } from './mods/AttributeEditor';
 
 export interface IPageCreatorEvent {
   /**
@@ -31,8 +37,8 @@ export interface IPageCreatorTheme extends IBaseTheme {
 
 export interface IPageCreatorProps
   extends IPageCreatorEvent,
-  ISubProps,
-  IBaseComponentProps {
+    ISubProps,
+    IBaseComponentProps {
   /**
    * 是否展现
    */
@@ -42,12 +48,27 @@ export interface IPageCreatorProps
    * 文案
    */
   text?: string;
+
+  /**
+   * 属性编辑器（可 model）
+   */
+  propsEditor?: IAttributeEditorProps;
+
+  /**
+   * 属性编辑器（非 Model）
+   */
+  propsEditorExtra?: IAttributeEditorProps;
 }
 
 export const DEFAULT_PROPS: IPageCreatorProps = {
   theme: {
     main: '#25ab68',
     bgColor: '#ececec'
+  },
+  propsEditor: {
+    formData: {},
+    schema: {},
+    pageStore: {}
   },
   styles: {
     container: {}
@@ -58,20 +79,29 @@ export const PageCreatorCurrying: TComponentCurrying<
   IPageCreatorProps,
   ISubProps
 > = subComponents => props => {
-  const { 
+  const {
     headerBar = {},
     componentTree = {},
-    switchPanel = {}, 
-    visible, text, styles, onClick } = props;
-  
-  const { HeaderBar: HeaderBarComponent, ComponentTree: ComponentTreeComponent, SwitchPanel: SwitchPanelComponent  } = subComponents as Record<
-    string,
-    React.FunctionComponent<typeof props>
-  >;
+    switchPanel = {},
+    propsEditor = {},
+    propsEditorExtra = {},
+    visible,
+    text,
+    styles,
+    onClick
+  } = props;
+
+  const {
+    HeaderBar: HeaderBarComponent,
+    ComponentTree: ComponentTreeComponent,
+    SwitchPanel: SwitchPanelComponent
+  } = subComponents as Record<string, React.FunctionComponent<typeof props>>;
 
   let switchPanelWrapRef = useRef(null);
   let switchPanelWrapSize = useComponentSize(switchPanelWrapRef); // 获取元素尺寸
 
+  // 合并可控制和非可控的元素
+  // console.log(666, propsEditor.formData, visible);
   return (
     <StyledContainer
       style={styles.container}
@@ -85,18 +115,27 @@ export const PageCreatorCurrying: TComponentCurrying<
         className="page-header"
       >
         <HeaderBarComponent />
-        <SplitPane
-          split="vertical"
-          minSize={200}
-          maxSize={300}
-          defaultSize={200}
-        >
+        <SplitPane split="vertical" minSize={200} defaultSize={200}>
           <StyledComponentTreeWrap>
             <ComponentTreeComponent {...componentTree} />
           </StyledComponentTreeWrap>
-          <StyledSwitchPanelWrap ref={switchPanelWrapRef}>
-            <SwitchPanelComponent cWidth={switchPanelWrapSize.width} cHeight={switchPanelWrapSize.height} {...switchPanel} />
-          </StyledSwitchPanelWrap>
+
+          <SplitPane
+            primary="second"
+            split="vertical"
+            defaultSize="300"
+            minSize="300"
+          >
+            <StyledSwitchPanelWrap ref={switchPanelWrapRef}>
+              <SwitchPanelComponent
+                cWidth={switchPanelWrapSize.width}
+                cHeight={switchPanelWrapSize.height}
+                {...switchPanel}
+              />
+            </StyledSwitchPanelWrap>
+            {/* <div/> */}
+            <AttributeEditor {...propsEditor} {...propsEditorExtra} />
+          </SplitPane>
         </SplitPane>
       </SplitPane>
     </StyledContainer>

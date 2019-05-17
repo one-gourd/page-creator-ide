@@ -6,6 +6,12 @@ import { DEFAULT_PROPS, IPageCreatorProps } from '.';
 import { showConsole } from './solution';
 
 import { subComponents, ISubProps } from './subs';
+import {
+  PropsEditorModel,
+  otherControlledKeyMap,
+  modelExtends,
+  mergeRule
+} from './model'
 
 import { router as GetRouter } from './router/get';
 import { router as PostRouter } from './router/post';
@@ -19,6 +25,7 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
       onClick: [showConsole]
     },
     defaultProps: DEFAULT_PROPS,
+    mergeRule: mergeRule,
     children: subComponents
   },
   router: {
@@ -51,9 +58,12 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
   },
   model: {
     controlledKeys: [], // 后续再初始化
+    otherControlledKeyMap,
     props: {
       visible: types.optional(types.boolean, true),
-      text: types.optional(types.string, '')
+      text: types.optional(types.string, ''),
+
+      propsEditor: PropsEditorModel
       // language: types.optional(
       //   types.enumeration('Type', CODE_LANGUAGES),
       //   ECodeLanguage.JS
@@ -61,7 +71,8 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
       // children: types.array(types.late((): IAnyModelType => SchemaModel)) // 在 mst v3 中， `types.array` 默认值就是 `[]`
       // options: types.map(types.union(types.boolean, types.string))
       // 在 mst v3 中， `types.map` 默认值就是 `{}`
-    }
+    },
+    extends: modelExtends
   }
 };
 

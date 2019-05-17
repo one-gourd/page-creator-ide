@@ -1,3 +1,6 @@
+// http://gcs.dockerlab.alipay.net/api/packages/134/components
+export const URL_COMPONENT_LIST = 'http://gcs.dockerlab.alipay.net/api/packages/134/components';
+
 export const schema = {
   modules: [
     {
@@ -10,20 +13,20 @@ export const schema = {
     }
   ],
   components: [
-    {
-      component: 'Gourd.Iterator',
-      id: 'Iterator',
-      props: {
-        dataSource: [{ text: 1 }]
-      },
-      children: [
-        {
-          component: 'div',
-          id: 'itdiv',
-          props: { children: '{{$scope.text}}' }
-        }
-      ]
-    },
+    // {
+    //   component: 'Iterator',
+    //   id: 'Iterator',
+    //   props: {
+    //     dataSource: [{ text: 1 }]
+    //   },
+    //   children: [
+    //     {
+    //       component: 'div',
+    //       id: 'itdiv',
+    //       props: { children: '{{$scope.text}}' }
+    //     }
+    //   ]
+    // },
     {
       component: 'div',
       id: '$div_rk2ss',

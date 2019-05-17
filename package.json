@@ -73,17 +73,19 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-      "ide-header-bar": "^0.1.3",
-      "ide-component-tree": "^0.1.2",
-      "ide-function-sets": "^0.1.1",
-      "ide-switch-panel": "^0.1.1",
-      "polished": "^2.3.3",
-      "react-split-pane": "^0.1.85",
-      "ts-debounce": "^1.0.0"
+    "axios": "^0.18.0",
+    "ide-component-tree": "^0.1.2",
+    "ide-function-sets": "^0.1.1",
+    "ide-header-bar": "^0.1.3",
+    "ide-props-editor": "^0.1.1",
+    "ide-switch-panel": "^0.1.1",
+    "polished": "^2.3.3",
+    "react-split-pane": "^0.1.85",
+    "ts-debounce": "^1.0.0"
   },
   "peerDependencies": {
-    "ide-code-editor":"0.x.x",
-    "ss-tree":"1.x.x",
+    "ide-code-editor": "0.x.x",
+    "ss-tree": "1.x.x",
     "ide-lib-utils": "0.x",
     "ide-lib-base-component": "0.x",
     "ide-lib-engine": "0.x",

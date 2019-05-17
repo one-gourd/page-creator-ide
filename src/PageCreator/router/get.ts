@@ -19,4 +19,4 @@ router.get('getModelInstance', '/model', function (ctx: IContext) {
 });
 
 // 返回某个 client 对象
-router.get('getClientByName', '/innerApps/:name', getInnerAppsMiddleware);
+// router.get('getClientByName', '/innerApps/:name', getInnerAppsMiddleware);
