@@ -86,7 +86,6 @@ export const propsSchema = {
       key: {
         type: 'id',
         title: '唯一 id',
-        prefix: '$Button_'
       },
       children: {
         type: 'string',

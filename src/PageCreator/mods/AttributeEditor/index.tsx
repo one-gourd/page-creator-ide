@@ -29,9 +29,9 @@ const editorProps: any = {
   }
 };
 
-function reducer(state: any, action: any) {
-  return Object.assign({}, action.formData);
-}
+// function reducer(state: any, action: any) {
+//   return Object.assign({}, action.formData);
+// }
 
 export interface IAttributeEditorProps {
   clientFnSets?: any;
@@ -45,14 +45,13 @@ export const AttributeEditor: React.FunctionComponent<
   IAttributeEditorProps
 > = observer(props => {
   const { onChange, formData } = props;
-  const [state, dispatch] = useReducer(reducer, formData);
   const handleChange = useCallback(
     (ev: any) => {
-      dispatch({ type: 'change', formData: ev.formData });
-      onChange && onChange(state);
+      onChange && onChange(ev.formData);
     },
     [onChange]
   );
+  // console.log(55, formData);
   editorProps.editorExtraParam.clientFnSets = props.clientFnSets;
   editorProps.editorExtraParam.$store = props.pageStore;
   editorProps.formData = formData;

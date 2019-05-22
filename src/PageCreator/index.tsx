@@ -134,7 +134,10 @@ export const PageCreatorCurrying: TComponentCurrying<
               />
             </StyledSwitchPanelWrap>
             {/* <div/> */}
-            <AttributeEditor {...propsEditor} {...propsEditorExtra} />
+            <AttributeEditor
+              {...propsEditor}
+              {...propsEditorExtra}
+            />
           </SplitPane>
         </SplitPane>
       </SplitPane>

@@ -20,54 +20,89 @@ import { listComponent } from './component-list';
 // 通过请求获取 props
 const LIST_COMPONENT = {};
 
-axios({
-  method: 'get',
-  url: URL_COMPONENT_LIST,
-  responseType: 'json'
-}).then(res => {
-  const listData = (res && res.data && res.data.data) || [];
-  // console.log(444, listData);
-  listData.forEach(info => {
-    const { name, packageId } = info;
-    const componentName = `${packageId}_${name}`;
+// axios({
+//   method: 'get',
+//   url: URL_COMPONENT_LIST,
+//   responseType: 'json'
+// }).then(res => {
+//   const listData = (res && res.data && res.data.data) || [];
+//   // console.log(444, listData);
+//   listData.forEach(info => {
+//     const { name, packageId } = info;
+//     const componentName = `${packageId}_${name}`;
 
-    LIST_COMPONENT[componentName] = info;
-  });
+//     LIST_COMPONENT[componentName] = info;
+//   });
 
-  console.log(111, LIST_COMPONENT);
-});
+//   console.log(111, LIST_COMPONENT);
+// });
 
 const convertedJSON = schemaConverter(
   oldSchemajson,
   ESchemaOrigin.GOURD_V1
 ) as ISchemaProps;
 
-const schemaJSONv2 = schemaConverter(newSchemajson.components);
-// console.log('222', newSchemajson.modules);
+const schemaJSONv2 = schemaConverter(
+  newSchemajson.components,
+  ESchemaOrigin.GOURD_V2,
+  function(node: any) {
+    const newNode = Object.assign({}, node);
+    newNode.name = node.name || (node.component && node.component.name);
+    // newNode.name = node.name || node.component;
+    newNode.screenId = node.screenId || node.id;
+    return newNode;
+  }
+);
 
-newSchemajson.modules.forEach((mod: { name: string; dist: string }) => {
-  // addScript(mod.dist)
+// 获取 list 等列表
+newSchemajson.modules.forEach((mod: { name: string; id: string }) => {
+  const url = `http://gcs.dockerlab.alipay.net/api/packages/${
+    mod.id
+  }/components`;
+  // addScript(url);
+  axios({
+    method: 'get',
+    url: url,
+    responseType: 'json'
+  }).then(res => {
+    const listData = (res && res.data && res.data.data) || [];
+    // console.log(444, listData);
+    listData.forEach(info => {
+      const { name, packageId } = info;
+      const componentName = `${packageId}_${name}`;
+
+      LIST_COMPONENT[componentName] = info;
+    });
+  });
 });
 
 const schema = createSchemaModel(schemaJSONv2);
-// const schema = createSchemaModel(convertedJSON);
+// console.log('222', schemaJSONv2);
 
 const onExpand = function(keys) {
   // console.log(888, keys);
 };
 
 const onSelectNode = node => {
-  console.log('当前选中的 node:', node.id, node.name);
+  const attrs = JSON.parse(node.attrs);
+  const pid = attrs && attrs.component && attrs.component.packageId;
 
   // 获取选中的节点，然后将属性传递给属性编辑器
-  const nameInList = `134_${node.name}`;
+  const nameInList = `${pid}_${node.name}`;
+  console.log('当前选中的 node:', node.id, node.name, nameInList);
+
   const selectListItem = LIST_COMPONENT[nameInList];
   if (!selectListItem) {
     message.info(`当前选中的 ${node.name} 没有组件信息`);
     return;
   }
 
-  const curProps = {};
+  const curProps = {
+    key: {
+      type: 'id',
+      title: '唯一 id'
+    }
+  };
   for (const key in selectListItem.props) {
     if (selectListItem.props.hasOwnProperty(key)) {
       const element = selectListItem.props[key];
@@ -90,6 +125,7 @@ const onSelectNode = node => {
 
       const curFormData = {
         key: nodeData.screenId,
+        id: node.id,
         ...propData
       };
       // console.log(
@@ -214,7 +250,7 @@ const switchPanel = {
     language: 'json'
   },
   previewer: {
-    url: 'http://localhost:9006/gourd2/pi/demo/index.html?from=ide'
+    url: 'http://localhost:9006/gourd2/pi/demo/preview.html?from=ide'
   }
 };
 
@@ -226,26 +262,32 @@ const propsEditor = {
 
 const propsEditorExtra = {
   clientFnSets: innerApps.switchPanel.innerApps.fnSets.client,
-  onChange: (state: any) => {
-    // 记得添加 debounce
-    console.log('onChange: ', state);
+  // 记得添加 debounce
+  onChange: debounce(
+    (state: any) => {
+      console.log('onChange: ', state);
 
-    // 更改属性
-    const { uuid } = state;
-    if (!uuid) {
-      message.error('缺少 uuid 参数，无法更新属性');
-      return;
+      // 更改属性
+      const { id } = state;
+      if (!id) {
+        message.error('缺少 id 参数，无法更新属性');
+        return;
+      }
+
+      client
+        .put(`/schemaTree/nodes/${id}`, {
+          name: 'attrs',
+          value: omit(state, 'id')
+        })
+        // .then(res => {
+        //   console.log(666, res, omit(state, 'id'));
+        // });
+    },
+    400,
+    {
+      isImmediate: false
     }
-
-    client
-      .put(`/schemaTree/nodes/${uuid}`, {
-        name: 'attrs',
-        value: omit(state, 'uuid')
-      })
-      .then(res => {
-        console.log(666, res, omit(state, 'uuid'));
-      });
-  }
+  )
 };
 
 render(
@@ -281,5 +323,5 @@ setTimeout(() => {
   //   name: 'propsEditor',
   //   value: propsEditor
   // });
-  console.log(444, innerApps.switchPanel.innerApps.fnSets);
+  // console.log(444, innerApps.switchPanel.innerApps.fnSets);
 }, 2000);
