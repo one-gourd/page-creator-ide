@@ -5,43 +5,28 @@ import { createSchemaModel, ISchemaProps } from 'ide-tree';
 import { schemaConverter, ESchemaOrigin } from 'ide-component-tree';
 import { IPanel } from 'ide-switch-panel';
 import { debounce } from 'ts-debounce';
-import { invariant, omit } from 'ide-lib-utils';
+import { invariant, omit, pick, getValueByPath } from 'ide-lib-utils';
+import { REPL, converterFnJSON } from 'ide-function-sets';
 
 import axios from 'axios';
 
 import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
-import { addScript } from '../src/lib/util';
 
 import oldSchemajson from './old-schema.json';
 import { schema as newSchemajson, URL_COMPONENT_LIST } from './new-schema.js';
 import { pageStore, propsSchema, formData } from './propsEditor';
-import { listComponent } from './component-list';
+import { listComponentResult } from './component-list';
 
 // 通过请求获取 props
-const LIST_COMPONENT = {};
-
-// axios({
-//   method: 'get',
-//   url: URL_COMPONENT_LIST,
-//   responseType: 'json'
-// }).then(res => {
-//   const listData = (res && res.data && res.data.data) || [];
-//   // console.log(444, listData);
-//   listData.forEach(info => {
-//     const { name, packageId } = info;
-//     const componentName = `${packageId}_${name}`;
-
-//     LIST_COMPONENT[componentName] = info;
-//   });
-
-//   console.log(111, LIST_COMPONENT);
-// });
+const LIST_COMPONENT_MAP = {};
+let LIST_COMPONENT = {};
 
 const convertedJSON = schemaConverter(
   oldSchemajson,
   ESchemaOrigin.GOURD_V1
 ) as ISchemaProps;
 
+// 新版 json 转换
 const schemaJSONv2 = schemaConverter(
   newSchemajson.components,
   ESchemaOrigin.GOURD_V2,
@@ -54,30 +39,59 @@ const schemaJSONv2 = schemaConverter(
   }
 );
 
-// 获取 list 等列表
-newSchemajson.modules.forEach((mod: { name: string; id: string }) => {
-  const url = `http://gcs.dockerlab.alipay.net/api/packages/${
-    mod.id
-  }/components`;
-  // addScript(url);
-  axios({
-    method: 'get',
-    url: url,
-    responseType: 'json'
-  }).then(res => {
-    const listData = (res && res.data && res.data.data) || [];
-    // console.log(444, listData);
-    listData.forEach(info => {
-      const { name, packageId } = info;
-      const componentName = `${packageId}_${name}`;
+// 转换函数
+const replFns = new REPL(decodeURIComponent(newSchemajson.functions));
+const fnJSON = replFns.extractAllFunction(); // 获取所有的函数对象
+const fnsSnapshoot = converterFnJSON(fnJSON, 'fnBody');
+// console.log(222, fnsSnapshoot);
 
-      LIST_COMPONENT[componentName] = info;
-    });
-  });
+const res = listComponentResult;
+const listData = (res && res.data) || [];
+LIST_COMPONENT[134] = { title: 134, list: listData }; // 列表项
+// console.log(444, listData);
+listData.forEach(info => {
+  const { name, packageId } = info;
+  const componentName = `${packageId}_${name}`;
+
+  LIST_COMPONENT_MAP[componentName] = info;
+  // LIST_COMPONENT_MAP_SIMPLE[componentName] = omit(info, [
+  //   'props',
+  //   'created_at',
+  //   'updated_at'
+  // ]);
 });
 
+// 获取 list 等列表
+// newSchemajson.modules.forEach((mod: { name: string; id: string }) => {
+//   const url = `http://gcs.dockerlab.alipay.net/api/packages/${
+//     mod.id
+//   }/components`;
+//   // addScript(url);
+//   axios({
+//     method: 'get',
+//     url: url,
+//     responseType: 'json'
+//   }).then(res => {
+//     const listData = (res && res.data && res.data.data) || [];
+//     LIST_COMPONENT[mod.id] = { title: mod.id, list: listData }; // 列表项
+//     // console.log(444, listData);
+//     listData.forEach(info => {
+//       const { name, packageId } = info;
+//       const componentName = `${packageId}_${name}`;
+
+//       LIST_COMPONENT_MAP[componentName] = info;
+//       // LIST_COMPONENT_MAP_SIMPLE[componentName] = omit(info, [
+//       //   'props',
+//       //   'created_at',
+//       //   'updated_at'
+//       // ]);
+//     });
+//     client.put('/comList/model', { name: 'list', value: LIST_COMPONENT });
+//   });
+// });
+
 const schema = createSchemaModel(schemaJSONv2);
-// console.log('222', schemaJSONv2);
+// console.log('222', schema);
 
 const onExpand = function(keys) {
   // console.log(888, keys);
@@ -91,17 +105,17 @@ const onSelectNode = node => {
   const nameInList = `${pid}_${node.name}`;
   console.log('当前选中的 node:', node.id, node.name, nameInList);
 
-  const selectListItem = LIST_COMPONENT[nameInList];
+  const selectListItem = LIST_COMPONENT_MAP[nameInList];
   if (!selectListItem) {
-    message.info(`当前选中的 ${node.name} 没有组件信息`);
+    message.info(`当前选中的 ${node.name} 没有组件信息(cid: ${nameInList})`);
     return;
   }
 
   const curProps = {
-    key: {
-      type: 'id',
-      title: '唯一 id'
-    }
+    // key: {
+    //   type: 'id',
+    //   title: '唯一 id'
+    // }
   };
   for (const key in selectListItem.props) {
     if (selectListItem.props.hasOwnProperty(key)) {
@@ -124,8 +138,8 @@ const onSelectNode = node => {
       const propData = attrJSON.props || {};
 
       const curFormData = {
-        key: nodeData.screenId,
         id: node.id,
+        component: attrJSON.component,
         ...propData
       };
       // console.log(
@@ -189,6 +203,9 @@ const {
   innerApps
 } = PageCreatorFactory();
 
+const clientFnSets = innerApps.switchPanel.innerApps.fnSets.client;
+const clientSwitchPanel = innerApps.switchPanel.client;
+
 function onClick(value) {
   console.log('当前点击：', value);
 }
@@ -204,6 +221,18 @@ function onSwitchWithClient(panel: IPanel, index: number) {
   //   value: `${index}: panel name: ${panel.id}`
   // });
 }
+
+function updatePreview(type: string, data: any) {
+  client.put('/previewer/iframe', {
+    name: 'data',
+    value: {
+      event: 'data-from-ide',
+      type: type,
+      data: data
+    }
+  });
+}
+
 // 经过 debounce 处理的函数，提高性能
 const schemaModelChange = debounce(
   (key: string, value: any) => {
@@ -223,7 +252,7 @@ const schemaModelChange = debounce(
         name: 'data',
         value: {
           event: 'data-from-ide',
-          type: 'updateSchema',
+          type: 'reset',
           data: newSchemajson
         }
       });
@@ -251,6 +280,19 @@ const switchPanel = {
   },
   previewer: {
     url: 'http://localhost:9006/gourd2/pi/demo/preview.html?from=ide'
+  },
+  fnSets: {
+    // 当函数面板变更的时候
+    onFnListChange: (type, obj) => {
+      console.log('fn list change:', type, obj);
+
+      // 获取函数集最新结果，传递给 pi 进行渲染
+      client.get('/fnSets/model/all-fns-string').then(res => {
+        const fns = getValueByPath(res, 'body.data.result');
+        // console.log(fns, res);
+        updatePreview('setFunctions', [encodeURIComponent(fns)]);
+      });
+    }
   }
 };
 
@@ -261,7 +303,12 @@ const propsEditor = {
 };
 
 const propsEditorExtra = {
-  clientFnSets: innerApps.switchPanel.innerApps.fnSets.client,
+  clientFnSets: clientFnSets,
+  onCallFnEditor: (type, name) => {
+    console.log(`${type} ${name}`);
+    // 切换到函数面板
+    clientSwitchPanel.put(`/panels/selection/2`);
+  },
   // 记得添加 debounce
   onChange: debounce(
     (state: any) => {
@@ -274,14 +321,16 @@ const propsEditorExtra = {
         return;
       }
 
-      client
-        .put(`/schemaTree/nodes/${id}`, {
-          name: 'attrs',
-          value: omit(state, 'id')
-        })
-        // .then(res => {
-        //   console.log(666, res, omit(state, 'id'));
-        // });
+      client.put(`/schemaTree/nodes/${id}`, {
+        name: 'attrs',
+        value: {
+          props: omit(state, ['id', 'component']),
+          component: state.component
+        }
+      });
+      // .then(res => {
+      //   console.log(666, res, omit(state, 'id'));
+      // });
     },
     400,
     {
@@ -301,27 +350,41 @@ render(
   document.getElementById('example') as HTMLElement
 );
 
+/* ----------------------------------------------------
+    初始化组件树
+----------------------------------------------------- */
+
 // 创建组件树和右键菜单
 client.post('/schemaTree/tree', {
   schema: schema
 }); // 注意这里的 schema 需要用 createSchemaModel 转换一层，否则因为缺少 parentId ，导致无法创建成功
 client.post('/treeContextMenu/menu', { menu: menu });
+client.put('/comList/model', { name: 'visible', value: false });
+client.put('/comList/model', { name: 'list', value: LIST_COMPONENT });
 
-// 模拟新 pi 的更改
+/* ----------------------------------------------------
+    初始化函数面板
+----------------------------------------------------- */
+
+clientFnSets.post('/model', {
+  model: {
+    visible: true,
+    text: `text${Math.random()}`.slice(0, 8),
+    fns: fnsSnapshoot
+  }
+});
+
+/* ----------------------------------------------------
+    初始化函数面板
+----------------------------------------------------- */
+
 setTimeout(() => {
-  // 然后传递数据
-  client.put('/previewer/iframe', {
-    name: 'data',
-    value: {
-      event: 'data-from-ide',
-      type: 'updateSchema',
-      data: newSchemajson
-    }
-  });
+  // 然后更新 preview
+  updatePreview('reset', newSchemajson);
 
   // client.put('/model', {
   //   name: 'propsEditor',
   //   value: propsEditor
   // });
   // console.log(444, innerApps.switchPanel.innerApps.fnSets);
-}, 2000);
+}, 5000);

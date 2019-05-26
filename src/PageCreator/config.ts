@@ -11,7 +11,7 @@ import {
   otherControlledKeyMap,
   modelExtends,
   mergeRule
-} from './model'
+} from './model';
 
 import { router as GetRouter } from './router/get';
 import { router as PostRouter } from './router/post';
@@ -31,23 +31,32 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
   router: {
     domain: 'page-creator',
     list: [GetRouter, PostRouter, PutRouter, DelRouter],
-    hoistRoutes: [{
-      alias: 'schemaTree',
-      routerNames: ['componentTree', 'schemaTree']
-    }
-    ,{
-      alias: 'treeContextMenu',
+    hoistRoutes: [
+      {
+        alias: 'schemaTree',
+        routerNames: ['componentTree', 'schemaTree']
+      },
+      {
+        alias: 'treeContextMenu',
         routerNames: ['componentTree', 'contextMenu']
-    }
-    ,{
-      alias: 'previewer',
-      routerNames: ['switchPanel', 'previewer']
-    }
-    ,{
-      alias: 'editorInPanel',
-      routerNames: ['switchPanel', 'codeEditor']
-    }
-  ], // 提升访问子路由功能，相当于是强约束化的 alias
+      },
+      {
+        alias: 'comList',
+        routerNames: ['componentTree', 'comList']
+      },
+      {
+        alias: 'previewer',
+        routerNames: ['switchPanel', 'previewer']
+      },
+      {
+        alias: 'editorInPanel',
+        routerNames: ['switchPanel', 'codeEditor']
+      },
+      {
+        alias: 'fnSets',
+        routerNames: ['switchPanel', 'fnSets']
+      }
+    ] // 提升访问子路由功能，相当于是强约束化的 alias
     // aliases: {
     //   alias: 'blockbar',
     //   path: 'bar/headerbar'

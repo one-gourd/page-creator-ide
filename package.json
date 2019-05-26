@@ -74,13 +74,12 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "ide-component-tree": "^0.1.2",
+    "ide-component-tree": "^0.2.0",
     "ide-function-sets": "^0.1.1",
     "ide-header-bar": "^0.1.3",
     "ide-props-editor": "^0.1.1",
     "ide-switch-panel": "^0.1.1",
     "polished": "^2.3.3",
-    "react-split-pane": "^0.1.85",
     "ts-debounce": "^1.0.0"
   },
   "peerDependencies": {

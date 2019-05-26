@@ -1,23 +1,26 @@
 import React, { useCallback, useRef } from 'react';
-import { Button } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 import {
   IBaseTheme,
   IBaseComponentProps,
   useComponentSize
 } from 'ide-lib-base-component';
 import { TComponentCurrying } from 'ide-lib-engine';
-import SplitPane from 'react-split-pane';
 
 // import { debugInteract, debugRender } from '../lib/debug';
+
 import {
   StyledContainer,
-  StyledComponentTreeWrap,
+  StyledSiderContentWrap,
   StyledSwitchPanelWrap
 } from './styles';
 
 import { ISubProps } from './subs';
 
 import { AttributeEditor, IAttributeEditorProps } from './mods/AttributeEditor';
+import { SiderButton } from './mods/SiderButton';
+
+const { Header, Content, Sider } = Layout;
 
 export interface IPageCreatorEvent {
   /**
@@ -75,6 +78,10 @@ export const DEFAULT_PROPS: IPageCreatorProps = {
   }
 };
 
+const HEIGHT_HEAD = 65;
+const WIDTH_LEFT = 300;
+const WIDTH_RIGHT = 300;
+
 export const PageCreatorCurrying: TComponentCurrying<
   IPageCreatorProps,
   ISubProps
@@ -88,6 +95,7 @@ export const PageCreatorCurrying: TComponentCurrying<
     visible,
     text,
     styles,
+    theme,
     onClick
   } = props;
 
@@ -108,23 +116,42 @@ export const PageCreatorCurrying: TComponentCurrying<
       // ref={this.root}
       className="page-creator-ide-container"
     >
-      <SplitPane
-        split="horizontal"
-        size={64}
-        allowResize={false}
-        className="page-header"
-      >
-        <HeaderBarComponent />
-        <SplitPane split="vertical" minSize={200} defaultSize={200}>
-          <StyledComponentTreeWrap>
-            <ComponentTreeComponent {...componentTree} />
-          </StyledComponentTreeWrap>
+      <Layout>
+        <Header
+          style={{
+            padding: 0,
+            lineHeight: 1,
+            height: `${HEIGHT_HEAD}px`,
+            position: 'fixed',
+            width: '100%'
+          }}
+        >
+          <HeaderBarComponent />
+        </Header>
+        <Layout>
+          <Sider
+            width={WIDTH_LEFT}
+            style={{
+              overflow: 'auto',
+              height: `calc(100vh - ${HEIGHT_HEAD}px)`,
+              position: 'fixed',
+              top: `${HEIGHT_HEAD}px`,
+              left: 0
+            }}
+          >
+            <SiderButton theme={theme} />
 
-          <SplitPane
-            primary="second"
-            split="vertical"
-            defaultSize="300"
-            minSize="300"
+            <StyledSiderContentWrap>
+              <ComponentTreeComponent {...componentTree} />
+            </StyledSiderContentWrap>
+          </Sider>
+
+          <Content
+            style={{
+              height: `calc(100vh - ${HEIGHT_HEAD}px)`,
+              margin: `${HEIGHT_HEAD}px ${WIDTH_RIGHT}px 0 ${WIDTH_LEFT}px`,
+              overflow: 'initial'
+            }}
           >
             <StyledSwitchPanelWrap ref={switchPanelWrapRef}>
               <SwitchPanelComponent
@@ -133,14 +160,22 @@ export const PageCreatorCurrying: TComponentCurrying<
                 {...switchPanel}
               />
             </StyledSwitchPanelWrap>
-            {/* <div/> */}
-            <AttributeEditor
-              {...propsEditor}
-              {...propsEditorExtra}
-            />
-          </SplitPane>
-        </SplitPane>
-      </SplitPane>
+          </Content>
+          <Sider
+            width={WIDTH_RIGHT}
+            style={{
+              width: `${WIDTH_RIGHT}px`,
+              maxWidth: `${WIDTH_RIGHT}px`,
+              overflow: 'auto',
+              marginTop: `${HEIGHT_HEAD}px`,
+              position: 'fixed',
+              right: 0
+            }}
+          >
+            <AttributeEditor {...propsEditor} {...propsEditorExtra} />
+          </Sider>
+        </Layout>
+      </Layout>
     </StyledContainer>
   );
 };

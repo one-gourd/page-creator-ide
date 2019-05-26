@@ -1,4 +1,4 @@
-export const listComponent = {
+export const listComponentResult = {
   data: [
     {
       props: {

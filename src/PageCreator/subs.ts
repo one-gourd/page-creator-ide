@@ -12,11 +12,11 @@ import {
 
 import {
   ComponentTree,
-  Stores as ComponentTreeStores,
+  ComponentTreeStoresModel,
   IComponentTreeProps,
   ComponentTreeAddStore,
   DEFAULT_PROPS as DEFAULT_PROPS_COMPONENT_TREE,
-  ComponentTreeFactory,
+  ComponentTreeFactory
 } from 'ide-component-tree';
 
 import {
@@ -24,10 +24,9 @@ import {
   SwitchPanelStoresModel,
   ISwitchPanelProps,
   DEFAULT_PROPS as DEFAULT_PROPS_SWITCH_PANEL,
-    SwitchPanelAddStore,
-    SwitchPanelFactory
+  SwitchPanelAddStore,
+  SwitchPanelFactory
 } from 'ide-switch-panel';
-
 
 export interface ISubProps {
   headerBar?: IHeaderBarProps;
@@ -56,7 +55,7 @@ export const subComponents: Record<
     defaultProps: DEFAULT_PROPS_COMPONENT_TREE,
     normal: ComponentTree,
     addStore: ComponentTreeAddStore,
-    storesModel: ComponentTreeStores,
+    storesModel: ComponentTreeStoresModel,
     factory: ComponentTreeFactory,
     routeScope: ['model', 'menu', 'clients'] // 能通过父组件访问到的路径
   },

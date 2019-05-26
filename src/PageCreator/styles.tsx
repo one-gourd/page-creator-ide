@@ -1,8 +1,10 @@
 import styled from 'styled-components';
+import { IBaseStyledProps } from 'ide-lib-base-component';
+
 import { desaturate } from 'polished';
 import { IPageCreatorProps } from './index';
 
-interface IStyledProps extends IPageCreatorProps {
+interface IStyledProps extends IPageCreatorProps, IBaseStyledProps {
   style?: React.CSSProperties;
   className?: string;
   [prop: string]: any;
@@ -65,20 +67,19 @@ export const StyledContainer = styled.div.attrs({
   }
 `;
 
-
-
-export const StyledComponentTreeWrap = styled.div.attrs({
+export const StyledSiderContentWrap = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
 })<IStyledProps>`
   background-color: white;
   overflow: scroll;
+  padding-left: 60px;
   width: 100%;
   height: 100%;
 `;
 
 export const StyledSwitchPanelWrap = styled.div.attrs({
   style: (props: IStyledProps) => props.style || {} // 优先级会高一些，行内样式
-}) <IStyledProps>`
+})<IStyledProps>`
   background-color: white;
   width: 100%;
   height: 100%;
