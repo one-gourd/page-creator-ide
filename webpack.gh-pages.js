@@ -8,7 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const path = require('path');
-const { getExternal } = require('./webpack-helper');
+const { getExternal, npmDomain } = require('./webpack-helper');
 
 const targetDir = 'public';
 
@@ -16,7 +16,7 @@ module.exports = common.map(config => {
   /* 这份配置是用于发布 demo 到 gh-pages 分支使用的  */
   return merge(config, {
     entry: './demo/demo.tsx',
-    externals: getExternal(["ide-code-editor","ss-tree"], true),
+    externals: getExternal(['ide-code-editor', 'ss-tree'], true),
     mode: 'production',
     devtool: 'source-map',
     optimization: {
@@ -26,6 +26,7 @@ module.exports = common.map(config => {
       new CleanWebpackPlugin(targetDir),
       new HtmlWebpackPlugin({
         title: 'demo 页面',
+        npmDomain: npmDomain,
         excludeChunks: ['index', 'index.js'],
         // Load a custom template (lodash by default)
         template: 'demo/index.html'

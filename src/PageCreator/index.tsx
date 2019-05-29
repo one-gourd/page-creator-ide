@@ -126,12 +126,13 @@ export const PageCreatorCurrying: TComponentCurrying<
             width: '100%'
           }}
         >
-          <HeaderBarComponent />
+          <HeaderBarComponent {...headerBar} />
         </Header>
         <Layout>
           <Sider
             width={WIDTH_LEFT}
             style={{
+              zIndex: 9,
               overflow: 'auto',
               height: `calc(100vh - ${HEIGHT_HEAD}px)`,
               position: 'fixed',

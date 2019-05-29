@@ -1,6 +1,7 @@
 const path = require('path');
 const { getExternal } = require('./webpack-helper');
 
+
 const commontConfig = {
   entry: {
     index: './src/index.tsx',

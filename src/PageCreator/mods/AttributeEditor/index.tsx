@@ -37,9 +37,10 @@ export interface IAttributeEditorProps {
   clientFnSets?: IPropsEditorProps['editorExtraParam']['clientFnSets'];
   pageStore?: IPropsEditorProps['editorExtraParam']['$store'];
   formData?: any;
-  schema?: IPropsEditorProps['schema'];
+  schema?: Partial<IPropsEditorProps['schema']>;
   onChange?: any;
   onCallFnEditor?: IPropsEditorProps['editorExtraParam']['onCallFnEditor'];
+  varNameWrapper?: IPropsEditorProps['editorExtraParam']['varNameWrapper'];
 }
 
 export const AttributeEditor: React.FunctionComponent<
@@ -55,6 +56,7 @@ export const AttributeEditor: React.FunctionComponent<
   // console.log(55, formData);
   editorProps.editorExtraParam.clientFnSets = props.clientFnSets;
   editorProps.editorExtraParam.onCallFnEditor = props.onCallFnEditor;
+  editorProps.editorExtraParam.varNameWrapper = props.varNameWrapper;
   editorProps.editorExtraParam.$store = props.pageStore;
   editorProps.formData = formData;
   editorProps.schema = props.schema;
