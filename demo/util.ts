@@ -13,12 +13,18 @@ import { appId, pageId, API_COMP_TPL } from './constant';
     请求相关
 ----------------------------------------------------- */
 //  获取北渚的区块 list
-export const getCompTpl = async () => {
+export const getCompBlockList = async () => {
   const res = await axios.get(API_COMP_TPL);
   const tplList = getValueByPath(res, 'data.data');
   //   console.log('tplList:', tplList);
   return tplList;
 };
+
+export async function getModulesById(appId: string) {
+  const url = `http://gcs.dockerlab.alipay.net/api/application/${appId}/packages `;
+  const result = await axios.get(url);
+  return result.data;
+}
 
 // 通过 modules 获取组件的 list & schema
 export async function getComponentListAndSchema(modules) {
@@ -94,7 +100,7 @@ export function initSchemaTree(client, schemaJSON: object) {
   client.post('/schemaTree/tree', {
     schema: localSchema
   });
-//   console.log('rrrrrest');
+  //   console.log('rrrrrest');
   updatePreview(client, 'reset', [{ components: schemaJSON }]);
 }
 
@@ -146,10 +152,10 @@ export async function savePage(schema: string, fns: string) {
     }
   );
 
-  if (result.success) {
+  if (result.data.success) {
     message.info('保存成功');
   } else {
-    message.info(`保存失败: ${result.message}`);
+    message.info(`保存失败: ${result.data.message}`);
   }
   return result;
 }
@@ -158,4 +164,11 @@ export async function savePageByClient(client) {
   const fns = await getAllFnString(client);
   const resultSchema = await getAllSchema(client);
   return savePage(JSON.stringify(resultSchema), encodeURIComponent(fns));
+}
+
+export async function getBlockSchema(appId: string, compId: string) {
+  const result = await axios.get(
+    `http://gourd.daily.taobao.net/api/comp_publish/${appId}/prod/${compId}`
+  );
+  return getValueByPath(result, 'data.data.pageSchema');
 }

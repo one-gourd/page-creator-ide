@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { message } from 'antd';
-import { createSchemaModel, ISchemaProps } from 'ide-tree';
-import { schemaConverter, ESchemaOrigin } from 'ide-component-tree';
+// import { createSchemaModel, ISchemaProps } from 'ide-tree';
+import {
+  schemaConvertToNew,
+  schemaConverter,
+  ESchemaOrigin
+} from 'ide-component-tree';
 import { IPanel } from 'ide-switch-panel';
 import { debounce } from 'ts-debounce';
 import { invariant, omit, pick, getValueByPath } from 'ide-lib-utils';
-import { REPL, converterFnJSON } from 'ide-function-sets';
+// import { REPL, converterFnJSON } from 'ide-function-sets';
 import { IHeaderBarButton } from 'ide-header-bar';
 import { WRAPPER_TYPE } from 'ide-props-editor';
 
@@ -14,14 +18,15 @@ import axios from 'axios';
 
 import { PageCreator, IPageCreatorProps, PageCreatorFactory } from '../src/';
 
-import oldSchemajson from './old-schema.json';
+// import oldSchemajson from './old-schema.json';
 import { schema as newSchemajson, URL_COMPONENT_LIST } from './new-schema.js';
 import { pageStore, propsSchema, formData } from './propsEditor';
 import { listComponentResult } from './component-list';
-import { menuProps } from './constant';
+import { menuProps, useLocal, URL_PREVIEW, appId } from './constant';
 
 import {
-  getCompTpl,
+  getBlockSchema,
+  getCompBlockList,
   getAllSchema,
   initFnPanel,
   setCompTplList,
@@ -31,8 +36,10 @@ import {
   initSchemaTree,
   updatePropsEditor,
   getComponentListAndSchema,
-  getAllFnString
+  getAllFnString,
+  getModulesById
 } from './util';
+import console = require('console');
 
 const {
   ComponentWithStore: PageCreatorWithStore,
@@ -44,13 +51,19 @@ const clientFnSets = innerApps.switchPanel.innerApps.fnSets.client;
 const clientSwitchPanel = innerApps.switchPanel.client;
 
 /* ----------------------------------------------------
+    获取 BlockList
+----------------------------------------------------- */
+let blockList = {};
+async function initBlockList() {
+  blockList = await getCompBlockList();
+}
+initBlockList();
+
+/* ----------------------------------------------------
     获取 LIST_COMPONENT_MAP
 ----------------------------------------------------- */
 let LIST_COMPONENT_MAP = {};
 let LIST_COMPONENT = {};
-
-// 通过请求获取 list 列表
-const useLocal = false;
 
 // console.log('222', schema);
 
@@ -60,13 +73,14 @@ const onExpand = function(keys) {
 
 const onSelectNode = node => {
   const attrs = JSON.parse(node.attrs);
-  const pid = attrs && attrs.component && attrs.component.packageId;
+  const pid = attrs && attrs.component && attrs.component.packageId || 'html';
 
   // 获取选中的节点，然后将属性传递给属性编辑器
   const nameInList = `${pid}_${node.name}`;
   console.log('当前选中的 node:', node.id, node.name, nameInList);
 
   const selectListItem = LIST_COMPONENT_MAP[nameInList];
+
   if (!selectListItem) {
     message.info(`当前选中的 ${node.name} 没有组件信息(cid: ${nameInList})`);
     updatePropsEditor(client); // 置空右侧属性面板
@@ -135,7 +149,7 @@ const schemaModelChange = debounce(
   (key: string, value: any) => {
     if (key === 'schema') {
       const result = value.schemaJSON ? value.schemaJSON : value;
-      console.log(777, 'schema changed:', key, result);
+      console.log('schema changed:', key, result);
 
       // 更改 ide 的内容
       client.put('/editorInPanel/editor', {
@@ -154,12 +168,60 @@ const schemaModelChange = debounce(
   }
 );
 
+function onClickMenuItem(key: string, keyPath: Array<string>, item: any) {
+  console.log(`[context menu]当前点击项的 id: ${key}`);
+
+  const targetList = key === 'createBlock' ? blockList : LIST_COMPONENT;
+  // 如果点击是 “创建区块”，则更改 list 源
+  client.put('/comList/model', { name: 'list', value: targetList });
+}
+
+// 在 component list 选择某项
+const onSelectListItem = async item => {
+  console.log('onSelectListItem...', item);
+
+  // 在某个节点下新增
+  const keyName = await client
+    .get('/treeContextMenu/selection')
+    .then(res => res.body.data.selection);
+
+  // 获取当前选择的 selectId
+  if (keyName === 'createBlock') {
+    const blockSchema = await getBlockSchema(item.appId, item.id);
+    if (!blockSchema) {
+      message.error(
+        `${item.name} 区块没有对应的 schema，请检查(appId: ${item.appId}, id: ${
+          item.id
+        })`
+      );
+      return;
+    }
+    // 转换成 schema 对象
+    const convertedSchema = schemaConvertToNew(JSON.parse(blockSchema));
+    // const model = createSchemaModel(convertedSchema);
+
+    // 将生成的 schema 放到指定 id 的 children
+    const nodeId = await client
+      .get('/schemaTree/selection')
+      .then(res => res.body.data.id);
+    if (!!nodeId) {
+      client.post(`/schemaTree/nodes/${nodeId}/children`, {
+        schema: convertedSchema
+      });
+    }
+  }
+};
+
 const componentTree = {
   schemaTree: {
     onSelectNode: onSelectNode,
     onRightClickNode: onRightClick,
     onModelChange: schemaModelChange,
     onExpand
+  },
+  contextMenu: { onClickItem: onClickMenuItem },
+  comList: {
+    onSelectItem: onSelectListItem
   }
 };
 
@@ -169,11 +231,12 @@ const switchPanel = {
     language: 'json'
   },
   previewer: {
+    dataType: 'JSON',
     handleFrameTasks: data => {
-      alert(111);
       console.log('[iframe] receive pi data:', data);
     },
-    url: 'http://localhost:9006/gourd2/pi/demo/preview.html?from=ide'
+    url: `${URL_PREVIEW}?from=ide&messageShow=true`
+    // url: 'http://localhost:9006/gourd2/pi/demo/preview.html?from=ide&messageShow=true'
   },
   fnSets: {
     // 当函数面板变更的时候
@@ -256,7 +319,8 @@ render(
       onClickButton: (button: IHeaderBarButton) => {
         console.log('[headerBar] button click: ', button);
         savePageByClient(client);
-      }
+      },
+      iconTexts: []
     }}
     propsEditorExtra={propsEditorExtra}
     componentTree={componentTree}
@@ -278,32 +342,44 @@ client.put('/comList/model', { name: 'visible', value: false });
     初始化函数面板
 ----------------------------------------------------- */
 export async function initListAndSchema() {
-  const result = await getComponentListAndSchema(newSchemajson.modules);
+  const modules = await getModulesById(appId);
+  // console.log(444, modules);
+  const result = await getComponentListAndSchema(modules);
   LIST_COMPONENT_MAP = result.componentMap;
   LIST_COMPONENT = result.listComponents;
 
   const { pageSchema, eventFunction } = await getPageData();
 
   initFnPanel(clientFnSets, eventFunction);
+  updatePreview(client, 'setFunctions', [eventFunction]);
+
   initSchemaTree(client, JSON.parse(pageSchema));
   setCompTplList(client, LIST_COMPONENT);
 }
 
-// 如果是本地请求;
-if (useLocal) {
-  const res = listComponentResult;
-  const listData = (res && res.data) || [];
-  LIST_COMPONENT[134] = { title: 134, list: listData }; // 列表项
-  // console.log(444, listData);
-  listData.forEach(info => {
-    const { name, packageId } = info;
-    const componentName = `${packageId}_${name}`;
+// 监听 pi 的 ready 事件
+window.addEventListener('message', e => {
+  const { event, type } = e.data;
 
-    LIST_COMPONENT_MAP[componentName] = info;
-  });
-  initFnPanel(clientFnSets, newSchemajson.functions);
-  initSchemaTree(client, newSchemajson.components);
-  setCompTplList(client, LIST_COMPONENT);
-} else {
-  initListAndSchema();
-}
+  if (event === 'data-from-pi' && type === 'ready') {
+    // 如果是本地请求;
+    if (useLocal) {
+      const res = listComponentResult;
+      const listData = (res && res.data) || [];
+      LIST_COMPONENT[134] = { title: 134, list: listData }; // 列表项
+      // console.log(444, listData);
+      listData.forEach(info => {
+        const { name, packageId } = info;
+        const componentName = `${packageId}_${name}`;
+
+        LIST_COMPONENT_MAP[componentName] = info;
+      });
+      initFnPanel(clientFnSets, newSchemajson.functions);
+      updatePreview(client, 'setFunctions', [newSchemajson.functions]);
+      initSchemaTree(client, newSchemajson.components);
+      setCompTplList(client, LIST_COMPONENT);
+    } else {
+      initListAndSchema();
+    }
+  }
+});
