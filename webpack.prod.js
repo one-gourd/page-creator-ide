@@ -14,7 +14,7 @@ module.exports = common.map(config => {
   */
   return merge(config, {
     entry: './src/index.tsx',
-    externals: getExternal(["ide-code-editor","ss-tree"], true),
+    externals: getExternal(['ide-code-editor', 'ss-tree'], true),
     mode: 'production',
     devtool: 'source-map',
     optimization: {
@@ -28,6 +28,7 @@ module.exports = common.map(config => {
     ],
     output: {
       filename: 'index.umd.js',
+      chunkFilename: '[name].bundle.js',
       libraryTarget: 'umd',
       library: 'pageCreatorIDE',
       path: path.resolve(__dirname, 'dist'),

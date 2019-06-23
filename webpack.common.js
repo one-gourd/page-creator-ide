@@ -1,7 +1,6 @@
 const path = require('path');
 const { getExternal } = require('./webpack-helper');
 
-
 const commontConfig = {
   entry: {
     index: './src/index.tsx',
@@ -10,7 +9,7 @@ const commontConfig = {
   node: {
     fs: 'empty'
   },
-  externals: getExternal(["ide-code-editor","ss-tree"]),
+  externals: getExternal(['ide-code-editor', 'ss-tree']),
   module: {
     rules: [
       {
@@ -38,6 +37,7 @@ const commontConfig = {
 const normalConfig = Object.assign({}, commontConfig, {
   output: {
     filename: '[name].js',
+    chunkFilename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist')
   }
 });

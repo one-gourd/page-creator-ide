@@ -3,9 +3,9 @@ import { IComponentConfig } from 'ide-lib-engine';
 
 import {
   HeaderBar,
-  Stores as HeaderBarStores,
-  HeaderBarAddStore,
+  HeaderBarStoresModel,
   IHeaderBarProps,
+  HeaderBarAddStore,
   DEFAULT_PROPS as DEFAULT_PROPS_HEADER_BAR,
   HeaderBarFactory
 } from 'ide-header-bar';
@@ -45,7 +45,7 @@ export const subComponents: Record<
     defaultProps: DEFAULT_PROPS_HEADER_BAR,
     normal: HeaderBar,
     addStore: HeaderBarAddStore,
-    storesModel: HeaderBarStores,
+    storesModel: HeaderBarStoresModel,
     factory: HeaderBarFactory,
     routeScope: ['headerbar'] // 能通过父组件访问到的路径
   },

@@ -7,19 +7,11 @@ import { schemaConverter, ESchemaOrigin } from 'ide-component-tree';
 import { createSchemaModel, ISchemaProps } from 'ide-tree';
 import console = require('console');
 
-import { appId, pageId, API_COMP_TPL } from './constant';
+import { appId, pageId } from './constant';
 
 /* ----------------------------------------------------
     请求相关
 ----------------------------------------------------- */
-//  获取北渚的区块 list
-export const getCompBlockList = async () => {
-  const res = await axios.get(API_COMP_TPL);
-  const tplList = getValueByPath(res, 'data.data');
-  //   console.log('tplList:', tplList);
-  return tplList;
-};
-
 export async function getModulesById(appId: string) {
   const url = `http://gcs.dockerlab.alipay.net/api/application/${appId}/packages `;
   const result = await axios.get(url);
