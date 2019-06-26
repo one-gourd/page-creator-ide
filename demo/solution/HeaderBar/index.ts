@@ -1,5 +1,5 @@
 import { IIconButtons, IIconText } from 'ide-header-bar';
-import { savePageByClient } from '../../util';
+import { savePageByClient, getPageUrl } from '../../util';
 import { PAGE_DATA, URL_HISTORY } from '../../constant';
 export const initHeaderBarProps = client => {
   return {
@@ -25,6 +25,8 @@ export const initHeaderBarProps = client => {
             }
           }
         });
+      } else if (id === 'preview') {
+        window.open(getPageUrl());
       }
     },
     iconTexts: [
@@ -38,11 +40,11 @@ export const initHeaderBarProps = client => {
         icon: 'arrow-left',
         id: 'back-to-app'
       },
-      {
-        title: '全屏',
-        icon: 'scan',
-        id: 'fullscreen'
-      },
+      // {
+      //   title: '全屏',
+      //   icon: 'scan',
+      //   id: 'fullscreen'
+      // },
       {
         title: '预览页面',
         icon: 'eye',

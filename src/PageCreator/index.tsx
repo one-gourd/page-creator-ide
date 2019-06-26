@@ -115,7 +115,6 @@ export const PageCreatorCurrying: TComponentCurrying<
   let switchPanelWrapRef = useRef(null);
   let switchPanelWrapSize = useComponentSize(switchPanelWrapRef); // 获取元素尺寸
 
-  // console.log(444, historyList);
   // 合并可控制和非可控的元素
   return (
     <StyledContainer

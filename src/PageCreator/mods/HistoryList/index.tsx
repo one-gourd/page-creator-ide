@@ -1,11 +1,10 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { Timeline, Button, Modal } from 'antd';
 import { observer } from 'mobx-react-lite';
-import { IBaseComponentProps } from 'ide-lib-base-component';
+import axios from 'axios';
+import { IBaseComponentProps, useDataApi } from 'ide-lib-base-component';
 
 import { StyledHeader, StyledBody } from './styles';
-
-import { useDataApi } from '../../../lib/useDataFetch';
 
 interface IListItem {
   name: string;
@@ -65,7 +64,7 @@ export const HistoryList: React.FunctionComponent<IHistoryListProps> = observer(
       url,
       params,
       {},
-      { formatter: formatter }
+      { formatter: formatter, fetchFunction: axios }
     );
 
     // const listRef = useRef([]);
@@ -142,7 +141,10 @@ export const HistoryList: React.FunctionComponent<IHistoryListProps> = observer(
                           预览
                         </a>,
                         <span> | </span>,
-                        <a href="javascript:void(0);" onClick={onClickRollback(id, time)}>
+                        <a
+                          href="javascript:void(0);"
+                          onClick={onClickRollback(id, time)}
+                        >
                           回滚至此
                         </a>
                       ]

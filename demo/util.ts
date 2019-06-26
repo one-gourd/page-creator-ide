@@ -127,11 +127,12 @@ export function updatePropsEditor(client, schema = {}, formData = {}) {
 /* ----------------------------------------------------
     页面操作
 ----------------------------------------------------- */
-
+export let APP_INFO = null;
 // 获取页面初始数据
 export const getPageData = async () => {
   const res = await axios.get(`//${DOMAIN}/api/page/${appId}/${pageId}`);
-  return res.data.data;
+  APP_INFO = res.data.data;
+  return APP_INFO;
 };
 
 // 页面：根据 schemaId 和 fns 保存页面
@@ -168,6 +169,9 @@ export async function getBlockSchema(appId: string, compId: string) {
   return getValueByPath(result, 'data.data.pageSchema');
 }
 
+/* ----------------------------------------------------
+    历史记录相关
+----------------------------------------------------- */
 export async function getHistoryList(page: number = 1, pageSize: number = 5) {
   const result = await axios.get(
     `//${DOMAIN}/api/page_his/${appId}/list/${pageId}`,
@@ -202,4 +206,17 @@ export const rollbackHistory = async historyId => {
 
   const result = await axios.put(url, { _tb_token_: PAGE_DATA.token });
   return result.data;
+};
+// ===============
+
+// 获取预览/页面 url
+export const getPageUrl = (
+  isPreview = true,
+  dfEnv = 'prod'
+) => {
+  const { appName, name } = APP_INFO;
+  let query = `?dfEnv=${dfEnv}`;
+  let path = isPreview ? 'preview/page' : 'page';
+  return `${location.protocol}//${location.host}/pi/${path}/${appName
+  }/${name}${query}`;
 };
