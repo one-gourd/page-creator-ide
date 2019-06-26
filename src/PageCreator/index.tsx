@@ -19,6 +19,7 @@ import { ISubProps } from './subs';
 
 import { AttributeEditor, IAttributeEditorProps } from './mods/AttributeEditor';
 import { SiderButton } from './mods/SiderButton';
+import { HistoryList, IHistoryListProps } from './mods/HistoryList/index';
 
 const { Header, Content, Sider } = Layout;
 
@@ -61,6 +62,11 @@ export interface IPageCreatorProps
    * 属性编辑器（非 Model）
    */
   propsEditorExtra?: IAttributeEditorProps;
+
+  /**
+   * 历史列表 modal
+   */
+  historyList?: IHistoryListProps;
 }
 
 export const DEFAULT_PROPS: IPageCreatorProps = {
@@ -92,6 +98,7 @@ export const PageCreatorCurrying: TComponentCurrying<
     switchPanel = {},
     propsEditor = {},
     propsEditorExtra = {},
+    historyList = {},
     visible,
     text,
     styles,
@@ -108,8 +115,8 @@ export const PageCreatorCurrying: TComponentCurrying<
   let switchPanelWrapRef = useRef(null);
   let switchPanelWrapSize = useComponentSize(switchPanelWrapRef); // 获取元素尺寸
 
+  // console.log(444, historyList);
   // 合并可控制和非可控的元素
-  // console.log(666, propsEditor.formData, visible);
   return (
     <StyledContainer
       style={styles.container}
@@ -177,6 +184,7 @@ export const PageCreatorCurrying: TComponentCurrying<
           </Sider>
         </Layout>
       </Layout>
+      <HistoryList {...historyList} />
     </StyledContainer>
   );
 };

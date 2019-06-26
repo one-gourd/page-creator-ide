@@ -1,13 +1,18 @@
 import axios from 'axios';
 import { message } from 'antd';
-
-import { invariant, omit, pick, getValueByPath } from 'ide-lib-utils';
+import { getValueByPath } from 'ide-lib-utils';
 import { REPL, converterFnJSON } from 'ide-function-sets';
 import { schemaConverter, ESchemaOrigin } from 'ide-component-tree';
 import { createSchemaModel, ISchemaProps } from 'ide-tree';
-import console = require('console');
 
-import { appId, pageId } from './constant';
+import {
+  appId,
+  pageId,
+  PAGE_DATA,
+  DOMAIN,
+  APPLICATION_TYPE_EN_NAME,
+  API_SERVICE
+} from './constant';
 
 /* ----------------------------------------------------
     请求相关
@@ -125,20 +130,18 @@ export function updatePropsEditor(client, schema = {}, formData = {}) {
 
 // 获取页面初始数据
 export const getPageData = async () => {
-  const res = await axios.get(
-    `http://gourd.daily.taobao.net/api/page/${appId}/${pageId}`
-  );
+  const res = await axios.get(`//${DOMAIN}/api/page/${appId}/${pageId}`);
   return res.data.data;
 };
 
 // 页面：根据 schemaId 和 fns 保存页面
 export async function savePage(schema: string, fns: string) {
   const result: { [key: string]: any } = await axios.put(
-    `http://gourd.daily.taobao.net/api/page/${appId}/${pageId}`,
+    `//${DOMAIN}/api/page/${appId}/${pageId}`,
     {
       status: 1,
       appId,
-      _tb_token_: 'e15e4eef51eae',
+      _tb_token_: PAGE_DATA.token,
       eventFunction: fns,
       pageSchema: schema
     }
@@ -160,7 +163,43 @@ export async function savePageByClient(client) {
 
 export async function getBlockSchema(appId: string, compId: string) {
   const result = await axios.get(
-    `http://gourd.daily.taobao.net/api/comp_publish/${appId}/prod/${compId}`
+    `//${DOMAIN}/api/comp_publish/${appId}/prod/${compId}`
   );
   return getValueByPath(result, 'data.data.pageSchema');
 }
+
+export async function getHistoryList(page: number = 1, pageSize: number = 5) {
+  const result = await axios.get(
+    `//${DOMAIN}/api/page_his/${appId}/list/${pageId}`,
+    {
+      params: {
+        pageSize,
+        page,
+        _tb_token_: PAGE_DATA.token
+      }
+    }
+  );
+  return getValueByPath(result, 'data.data');
+}
+
+/**
+ * 获取草稿地址
+ * @param appId
+ * @param historyId
+ * @param appType {1 ||  2 ||  3}
+ * @return {string}
+ */
+export const getDraftUrl = (appId, historyId, appType = 1) => {
+  const appTypeName = APPLICATION_TYPE_EN_NAME[String(appType)];
+  return `${location.protocol}//${
+    location.host
+  }/pi/draft/history/${appTypeName}?appId=${appId}&historyId=${historyId}`;
+};
+
+// 请求接口，回滚到历史页面
+export const rollbackHistory = async historyId => {
+  let url = API_SERVICE.historyRollback(historyId);
+
+  const result = await axios.put(url, { _tb_token_: PAGE_DATA.token });
+  return result.data;
+};

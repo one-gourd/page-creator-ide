@@ -31,7 +31,6 @@ router.put('updateModel', '/model', function(ctx: IContext) {
   if (mergeRule[name]) {
     targetValue = mergeWithLevel(pickedOrigin, value, mergeRule[name].level);
   }
-
   // console.log(999, pickedOrigin, value, mergeRule[name]);
   const isSuccess = stores.model.updateAttribute(name, targetValue);
   // console.log(444, isSuccess);

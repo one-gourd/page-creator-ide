@@ -1,5 +1,9 @@
 import { types } from 'mobx-state-tree';
-import { BASE_CONTROLLED_KEYS } from 'ide-lib-base-component';
+import {
+  BASE_CONTROLLED_KEYS,
+  JSONModel,
+  EMPTY_JSON_SNAPSHOT
+} from 'ide-lib-base-component';
 
 import { IStoresModel, IModuleConfig } from 'ide-lib-engine';
 import { DEFAULT_PROPS, IPageCreatorProps } from '.';
@@ -72,7 +76,9 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
       visible: types.optional(types.boolean, true),
       text: types.optional(types.string, ''),
 
-      propsEditor: PropsEditorModel
+      propsEditor: PropsEditorModel,
+
+      historyList: types.optional(JSONModel, EMPTY_JSON_SNAPSHOT)
       // language: types.optional(
       //   types.enumeration('Type', CODE_LANGUAGES),
       //   ECodeLanguage.JS

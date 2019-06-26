@@ -4,7 +4,8 @@ export * from './propsEditor';
 
 import { CONTROLLED_KEYS_PROPSEDITOR, PropsEditorModel } from './propsEditor';
 export const otherControlledKeyMap = {
-  propsEditor: CONTROLLED_KEYS_PROPSEDITOR
+  propsEditor: CONTROLLED_KEYS_PROPSEDITOR,
+  historyList: ['visible', 'url', 'params']
 };
 
 export const modelExtends = (model: IAnyModelType) => {
@@ -27,5 +28,6 @@ export const modelExtends = (model: IAnyModelType) => {
 };
 
 export const mergeRule = {
-  propsEditor: { level: 1 }
+  propsEditor: { level: 1 },
+  historyList: { level: 1 }
 };
