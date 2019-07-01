@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { debounce } from 'ts-debounce';
+import { debounce } from 'ts-debounce-throttle';
 import { LIST_COMPONENT_MAP } from '../../constant';
 import { updatePropsEditor, updatePreview } from '../../util';
 
@@ -81,6 +81,6 @@ export const schemaModelChange = client =>
     },
     400,
     {
-      isImmediate: true
+      leading: true
     }
   );

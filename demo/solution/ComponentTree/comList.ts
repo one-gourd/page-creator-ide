@@ -1,6 +1,7 @@
 import { schemaConvertToNew } from 'ide-component-tree';
 import { message } from 'antd';
-import { getBlockSchema } from '../../util';
+import { getBlockSchema, savePageByClient } from '../../util';
+import { autoSave } from '../auto-queue/autoSave';
 
 // 在 component list 选择某项
 export const onSelectListItem = client => async item => {
@@ -36,4 +37,13 @@ export const onSelectListItem = client => async item => {
       });
     }
   }
+
+  // 调用自动保存功能
+  autoSave({
+    from: `list-${keyName}`,
+    action: () => {
+      message.info('正在自动保存...');
+      savePageByClient(client);
+    }
+  });
 };

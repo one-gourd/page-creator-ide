@@ -1,6 +1,6 @@
 import { WRAPPER_TYPE } from 'ide-props-editor';
 import { message } from 'antd';
-import { debounce } from 'ts-debounce';
+import { debounce } from 'ts-debounce-throttle';
 import { omit } from 'ide-lib-utils';
 
 export const initPropsEditorProps = (client, innerApps) => {
@@ -47,7 +47,7 @@ export const initPropsEditorProps = (client, innerApps) => {
       },
       400,
       {
-        isImmediate: false
+        leading: false
       }
     )
   };

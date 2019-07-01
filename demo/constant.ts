@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { getModulesById, getComponentListAndSchema } from './util';
+import { getModulesById, getComponentListAndSchema, APP_INFO } from './util';
 
 var searchParams = new URLSearchParams(location.search);
 export const appId = searchParams.get('appId');
@@ -14,11 +14,20 @@ export const API_COMP_TPL = `//${DOMAIN}/api/component/all/cate/template`;
 
 // 通过请求获取 list 列表
 export const useLocal = false;
-export const URL_PREVIEW = useLocal
-  ? 'http://localhost:9006/gourd2/pi/demo/preview.html'
-  : `//${DOMAIN}/ide-preview`;
 
 export const URL_HISTORY = `//${DOMAIN}/api/page_his/${appId}/list/${pageId}`;
+export const URL_ADMIN = `//${DOMAIN}/admin#/app/${appId}`;
+
+// 需要异步获取的 url，因为 app_info 的信息是异步获取的
+export const URLS = {
+  preview: () => {
+    return useLocal
+      ? 'http://localhost:9006/gourd2/pi/demo/preview.html'
+      : `//${DOMAIN}/plus/pi/preview/page/${APP_INFO &&
+          APP_INFO.appName}/${APP_INFO &&
+          APP_INFO.name}?from=ide&messageShow=true`;
+  }
+};
 
 /* ----------------------------------------------------
     获取 LIST_COMPONENT_MAP

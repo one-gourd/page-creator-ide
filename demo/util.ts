@@ -14,6 +14,8 @@ import {
   API_SERVICE
 } from './constant';
 
+import { autoSave } from './solution/auto-queue/autoSave';
+
 /* ----------------------------------------------------
     请求相关
 ----------------------------------------------------- */
@@ -101,7 +103,7 @@ export function initSchemaTree(client, schemaJSON: object) {
   updatePreview(client, 'reset', [{ components: schemaJSON }]);
 }
 
-// 更新预览页面
+// 更新预览页面 - 顺带自动保存
 export function updatePreview(client, type: string, data: any) {
   client.put('/previewer/iframe', {
     name: 'data',
@@ -128,10 +130,12 @@ export function updatePropsEditor(client, schema = {}, formData = {}) {
     页面操作
 ----------------------------------------------------- */
 export let APP_INFO = null;
+
 // 获取页面初始数据
 export const getPageData = async () => {
   const res = await axios.get(`//${DOMAIN}/api/page/${appId}/${pageId}`);
   APP_INFO = res.data.data;
+  // console.log('page info:', APP_INFO);
   return APP_INFO;
 };
 
@@ -210,13 +214,11 @@ export const rollbackHistory = async historyId => {
 // ===============
 
 // 获取预览/页面 url
-export const getPageUrl = (
-  isPreview = true,
-  dfEnv = 'prod'
-) => {
+export const getPageUrl = (isPreview = true, dfEnv = 'prod') => {
   const { appName, name } = APP_INFO;
   let query = `?dfEnv=${dfEnv}`;
   let path = isPreview ? 'preview/page' : 'page';
-  return `${location.protocol}//${location.host}/pi/${path}/${appName
-  }/${name}${query}`;
+  return `${location.protocol}//${
+    location.host
+  }/pi/${path}/${appName}/${name}${query}`;
 };

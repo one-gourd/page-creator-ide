@@ -1,5 +1,5 @@
 import { IPanel } from 'ide-switch-panel';
-import { URL_PREVIEW } from '../../constant';
+import { URLS } from '../../constant';
 import { getAllFnString, updatePreview, getAllSchema } from '../../util';
 
 function onSwitchWithClient(panel: IPanel, index: number) {
@@ -16,7 +16,7 @@ export const initSwitchPanelProps = client => {
       handleFrameTasks: data => {
         console.log('[iframe] receive pi data:', data);
       },
-      url: `${URL_PREVIEW}?from=ide&messageShow=true`
+      // url: ''
       // url: 'http://localhost:9006/gourd2/pi/demo/preview.html?from=ide&messageShow=true'
     },
     fnSets: {
