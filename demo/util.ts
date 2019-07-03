@@ -126,6 +126,16 @@ export function updatePropsEditor(client, schema = {}, formData = {}) {
   });
 }
 
+// 获取当前页面是否是锁定状态
+export const pageIsLocked = async (client, showMsg = true) => {
+  const res = await client.get('/model/cstate?filter=pageIsLocked');
+  const isLocked = getValueByPath(res, 'body.data.states.pageIsLocked');
+  if (isLocked && showMsg) {
+    message.info(`无法操作，当前页面正在被他人编辑`);
+  }
+  return isLocked;
+};
+
 /* ----------------------------------------------------
     页面操作
 ----------------------------------------------------- */
@@ -163,6 +173,14 @@ export async function savePage(schema: string, fns: string) {
 export async function savePageByClient(client) {
   const fns = await getAllFnString(client);
   const resultSchema = await getAllSchema(client);
+
+  // 获取当前页面是否锁定状态
+  const isLocked = await pageIsLocked(client);
+
+  if (isLocked) {
+    return;
+  }
+
   return savePage(JSON.stringify(resultSchema), encodeURIComponent(fns));
 }
 
@@ -211,7 +229,6 @@ export const rollbackHistory = async historyId => {
   const result = await axios.put(url, { _tb_token_: PAGE_DATA.token });
   return result.data;
 };
-// ===============
 
 // 获取预览/页面 url
 export const getPageUrl = (isPreview = true, dfEnv = 'prod') => {
@@ -222,3 +239,5 @@ export const getPageUrl = (isPreview = true, dfEnv = 'prod') => {
     location.host
   }/pi/${path}/${appName}/${name}${query}`;
 };
+
+// ===============

@@ -73,12 +73,11 @@ export const configPageCreator: IModuleConfig<IPageCreatorProps, ISubProps> = {
     controlledKeys: [], // 后续再初始化
     otherControlledKeyMap,
     props: {
-      visible: types.optional(types.boolean, true),
-      text: types.optional(types.string, ''),
-
+      // visible: types.optional(types.boolean, true),
+      // text: types.optional(types.string, ''),
       propsEditor: PropsEditorModel,
-
-      historyList: types.optional(JSONModel, EMPTY_JSON_SNAPSHOT)
+      historyList: types.optional(JSONModel, EMPTY_JSON_SNAPSHOT),
+      pageLocker: types.optional(JSONModel, EMPTY_JSON_SNAPSHOT)
       // language: types.optional(
       //   types.enumeration('Type', CODE_LANGUAGES),
       //   ECodeLanguage.JS

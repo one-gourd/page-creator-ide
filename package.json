@@ -60,7 +60,6 @@
     "react-docgen-typescript-loader": "^3.0.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "source-map-loader": "^0.2.4",
-    "ss-auto-queue": "^0.1.1",
     "storybook-addon-jsx": "^5.4.0",
     "style-loader": "^0.23.1",
     "ts-import-plugin": "^1.5.5",
@@ -75,13 +74,14 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "ide-component-tree": "^0.2.0",
-    "ide-function-sets": "^0.1.1",
+    "ide-component-tree": "0.2.x",
+    "ide-function-sets": "0.1.x",
     "ide-header-bar": "0.2.x",
     "ide-props-editor": "0.1.x",
-    "ide-switch-panel": "^0.1.1",
+    "ide-switch-panel": "0.1.x",
     "polished": "^2.3.3",
-    "ts-debounce-throttle": "^1.0.0"
+    "ss-auto-queue": "^0.1.1",
+    "ts-debounce-throttle": "1.0.x"
   },
   "peerDependencies": {
     "ide-code-editor": "0.x.x",

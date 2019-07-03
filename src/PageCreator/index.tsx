@@ -20,6 +20,8 @@ import { ISubProps } from './subs';
 import { AttributeEditor, IAttributeEditorProps } from './mods/AttributeEditor';
 import { SiderButton } from './mods/SiderButton';
 import { HistoryList, IHistoryListProps } from './mods/HistoryList/index';
+import PageLocker, { IPageLockerProps } from './mods/PageLocker';
+import { autoHeartBeat } from './mods/PageLocker/heartBeat';
 
 const { Header, Content, Sider } = Layout;
 
@@ -27,7 +29,7 @@ export interface IPageCreatorEvent {
   /**
    * 点击回调函数
    */
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  // onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 // export interface IPageCreatorStyles extends IBaseStyles {
@@ -43,15 +45,15 @@ export interface IPageCreatorProps
   extends IPageCreatorEvent,
     ISubProps,
     IBaseComponentProps {
-  /**
-   * 是否展现
-   */
-  visible?: boolean;
+  // /**
+  //  * 是否展现
+  //  */
+  // visible?: boolean;
 
-  /**
-   * 文案
-   */
-  text?: string;
+  // /**
+  //  * 文案
+  //  */
+  // text?: string;
 
   /**
    * 属性编辑器（可 model）
@@ -67,6 +69,11 @@ export interface IPageCreatorProps
    * 历史列表 modal
    */
   historyList?: IHistoryListProps;
+
+  /**
+   * 是否开启页面保护
+   */
+  pageLocker?: IPageLockerProps;
 }
 
 export const DEFAULT_PROPS: IPageCreatorProps = {
@@ -99,11 +106,9 @@ export const PageCreatorCurrying: TComponentCurrying<
     propsEditor = {},
     propsEditorExtra = {},
     historyList = {},
-    visible,
-    text,
+    pageLocker = {},
     styles,
-    theme,
-    onClick
+    theme
   } = props;
 
   const {
@@ -115,6 +120,9 @@ export const PageCreatorCurrying: TComponentCurrying<
   let switchPanelWrapRef = useRef(null);
   let switchPanelWrapSize = useComponentSize(switchPanelWrapRef); // 获取元素尺寸
 
+  let pageLockerRef = useRef(null);
+
+  autoHeartBeat({ from: 'render', pageLocker: pageLockerRef });
   // 合并可控制和非可控的元素
   return (
     <StyledContainer
@@ -122,6 +130,7 @@ export const PageCreatorCurrying: TComponentCurrying<
       // ref={this.root}
       className="page-creator-ide-container"
     >
+      <PageLocker ref={pageLockerRef} {...pageLocker} />
       <Layout>
         <Header
           style={{

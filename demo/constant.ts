@@ -90,3 +90,6 @@ export const API_SERVICE = {
       : `//${DOMAIN}/api/component/${appId}/rollback/${historyId}`;
   }
 };
+
+const protocol = !!~location.protocol.indexOf('https') ? 'wss' : 'ws';
+export const WS_URL = `${protocol}://${location.host}/ws/`;

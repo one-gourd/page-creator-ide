@@ -9,6 +9,7 @@ import { initSwitchPanelProps } from './solution/SwitchPanel';
 import { initPropsEditorProps } from './solution/PropsEditor';
 import { initHeaderBarProps } from './solution/HeaderBar';
 import { initHistoryList } from './solution/HistoryList';
+import { initPageLocker } from './solution/PageLocker';
 import { initPageCreator } from './solution';
 
 const {
@@ -31,6 +32,7 @@ render(
     componentTree={initComponentTreeProps(client)}
     switchPanel={initSwitchPanelProps(client)}
     historyList={initHistoryList(client)}
+    pageLocker={initPageLocker(client)}
   />,
   document.getElementById('example') as HTMLElement
 );
