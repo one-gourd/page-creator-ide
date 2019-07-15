@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.4](https://github.com/one-gourd/page-creator-ide/compare/v0.1.3...v0.1.4) (2019-07-15)
+
+
+### Features
+
+* 🎸 功能新增: 迁移通过 ws 完成防止多人编辑的提示 ([b409cf1](https://github.com/one-gourd/page-creator-ide/commit/b409cf1))
+
+
+
 ## [0.1.3](https://github.com/one-gourd/page-creator-ide/compare/v0.1.2...v0.1.3) (2019-07-03)
 
 
