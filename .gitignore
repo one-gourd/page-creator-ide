@@ -48,8 +48,7 @@ storybook-static
 # output demo
 .cache
 public
-src
 stories
 test
+src
 node-helper
-*.js
