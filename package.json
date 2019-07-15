@@ -5,6 +5,7 @@
   "main": "dist/index.umd.js",
   "module": "dist/index.umd.js",
   "browser": "dist/index.umd.js",
+  "idebug": "src/index.tsx",
   "typings": "dist/index.d.ts",
   "sideEffects": false,
   "homepage": "http://one-gourd.github.io/page-creator-ide",

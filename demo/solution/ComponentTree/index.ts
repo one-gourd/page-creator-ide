@@ -12,7 +12,7 @@ export const initComponentTreeProps = client => {
       onSelectNode: onSelectNode(client),
       onModelChange: schemaModelChange(client)
     },
-    contextMenu: { onClickItem: onClickMenuItem(client) },
+    contextMenu: { cWidth: 200,onClickItem: onClickMenuItem(client) },
     comList: {
       onSelectItem: onSelectListItem(client)
     }
