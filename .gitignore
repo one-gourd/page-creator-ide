@@ -43,10 +43,13 @@ jspm_packages
 # Output of 'npm pack'
 *.tgz
 
-dist
-
 storybook-static
 
 # output demo
 .cache
 public
+src
+stories
+test
+node-helper
+*.js
