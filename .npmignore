@@ -17,3 +17,4 @@ webpack.*.js
 .github
 node-helper
 webpack-helper.js
+public
